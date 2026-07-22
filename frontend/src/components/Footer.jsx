@@ -133,6 +133,15 @@ export default function Footer() {
         <div className="mt-10 flex flex-col gap-5 border-t border-white/10 pt-8 text-sm text-cream/60 md:flex-row md:items-center md:justify-between">
           <div>
             <p>Contact: support@Golden Sweep.example | 1-800-555-0199</p>
+            <address className="mt-2 not-italic">
+              Address:
+              <br />
+              Gameverse LLC
+              <br />
+              16192 Coastal Highway
+              <br />
+              Lewes DE 19958
+            </address>
             <p className="mt-1">Copyright 2026 Golden Sweep. All rights reserved.</p>
           </div>
           <div className="flex flex-wrap gap-3">

@@ -6,10 +6,8 @@ import {
   BadgeCheck,
   ChevronDown,
   CircleDollarSign,
-  Coins,
   CreditCard,
   Gamepad2,
-  Gift,
   Headphones,
   LockKeyhole,
   MessageCircle,
@@ -22,59 +20,13 @@ import {
   Zap,
 } from "lucide-react";
 
+import { games } from "../data/games.js";
+
 const heroImage =
   "https://images.unsplash.com/photo-1606167668584-78701c57f13d?auto=format&fit=crop&w=2200&q=85";
 
-const casinoImages = [
-  "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1596838132737-3306ed4a2e6d?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1511193311914-0346f16efe90?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1518895312237-a9e23508077d?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1500048993953-d23a436266cf?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1605870445919-838d190e8e1b?auto=format&fit=crop&w=700&q=80",
-];
-
-const platforms = [
-  "Player",
-  "Game Vault",
-  "Mafia",
-  "Blue Dragon",
-  "Juwa",
-  "Vegas Sweeps",
-  "Billion Balls",
-  "Cash Machine",
-  "Milky Way",
-  "Panda Master",
-  "Fire Kirin",
-  "Orion Stars",
-];
-
-// const games = [
-//   "Royal Reels",
-//   "Golden Pharaoh",
-//   "Diamond Rush",
-//   "Velvet Fortune",
-//   "Luxe Jackpot",
-//   "Midnight Crown",
-//   "Grand Vault",
-//   "Solar Spins",
-//   "Emerald Empire",
-//   "Crystal Palace",
-//   "Cash Inferno",
-//   "High Roller",
-//   "Vegas Bloom",
-//   "Ruby Royale",
-//   "Neon Nights",
-//   "Treasure Tide",
-//   "Fortune Flight",
-//   "Starlight Spins",
-//   "Golden Lotus",
-//   "Platinum Pulse",
-//   "Lucky Mirage",
-//   "Crown Quest",
-//   "Elite Sevens",
-//   "Opal Odyssey",
-// ];
+const heroCardImage =
+  "https://images.unsplash.com/photo-1596838132731-3301c3fd4317?auto=format&fit=crop&w=700&q=80";
 
 const features = [
   {
@@ -361,7 +313,7 @@ function HeroSection() {
           <div className="relative ml-auto max-w-md rounded-[2rem] border border-gold-200/35 bg-white/[0.08] p-5 shadow-luxury backdrop-blur-2xl">
             <div className="absolute -inset-1 rounded-[2rem] bg-gradient-to-br from-gold-200/30 via-transparent to-gold-400/10 blur-xl" />
             <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-black">
-              <img src={casinoImages[0]} alt="Premium slot and card game table" loading="lazy" className="h-80 w-full object-cover opacity-85" />
+              <img src={heroCardImage} alt="Premium slot and card game table" loading="lazy" className="h-80 w-full object-cover opacity-85" />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6">
                 <div className="flex items-center gap-1 text-gold-200">
                   {Array.from({ length: 5 }).map((_, index) => (
@@ -380,6 +332,10 @@ function HeroSection() {
 }
 
 function PlatformsSection() {
+  const handleGameClick = (link) => {
+    window.open(link, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <section id="platforms" className="bg-[#101010] px-4 py-20 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -393,26 +349,27 @@ function PlatformsSection() {
           viewport={sectionViewport}
           className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6"
         >
-          {platforms.map((platform, index) => (
+          {games.map((game) => (
             <motion.article
-              key={platform}
+              key={game.id}
               variants={fadeUp}
               whileHover={{ y: -8, scale: 1.03 }}
+              onClick={() => handleGameClick(game.link)}
               className="group overflow-hidden rounded-2xl border border-gold-200/25 bg-white/[0.05] shadow-luxury transition duration-300 hover:border-gold-200/80 hover:shadow-gold-lg"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <img
-                  src={casinoImages[index % casinoImages.length]}
-                  alt={`${platform} platform preview`}
+                  src={game.image}
+                  alt={`${game.name} platform preview`}
                   loading="lazy"
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
                 <div className="absolute left-3 top-3 grid h-10 w-10 place-items-center rounded-xl border border-gold-200/45 bg-black/55 font-heading text-sm font-bold text-gold-200 backdrop-blur">
-                  {platform.slice(0, 2).toUpperCase()}
+                  {game.name.slice(0, 2).toUpperCase()}
                 </div>
               </div>
-              <h3 className="px-3 py-4 text-center font-heading text-sm font-bold text-white sm:text-base">{platform}</h3>
+              <h3 className="px-3 py-4 text-center font-heading text-sm font-bold text-white sm:text-base">{game.name}</h3>
             </motion.article>
           ))}
         </motion.div>
@@ -606,6 +563,15 @@ function Footer() {
         <div className="mt-10 flex flex-col gap-5 border-t border-white/10 pt-8 text-sm text-cream/60 md:flex-row md:items-center md:justify-between">
           <div>
             <p>Contact: support@Golden Sweep.example | 1-800-555-0199</p>
+            <address className="mt-2 not-italic">
+              Address:
+              <br />
+              Gameverse LLC
+              <br />
+              16192 Coastal Highway
+              <br />
+              Lewes DE 19958
+            </address>
             <p className="mt-1">Copyright 2026 Golden Sweep. All rights reserved.</p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -642,21 +608,6 @@ function FloatingComponents() {
       >
         <MessageCircle size={24} />
       </motion.button>
-
-      {/* <motion.div
-        className="fixed bottom-24 left-4 z-40 hidden max-w-xs items-center gap-3 rounded-2xl border border-gold-200/30 bg-black/75 px-4 py-3 text-sm text-cream shadow-luxury backdrop-blur-xl sm:flex"
-        initial={{ opacity: 0, x: -24 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1.2, duration: 0.6 }}
-      >
-        <span className="grid h-10 w-10 place-items-center rounded-xl bg-gold-300/15 text-gold-200">
-          <Trophy size={18} />
-        </span>
-        <span>
-          <strong className="block text-white">Recent winner</strong>
-          Maya redeemed 25,000 rewards
-        </span>
-      </motion.div> */}
 
       <AnimatePresence>
         {showTop && (
