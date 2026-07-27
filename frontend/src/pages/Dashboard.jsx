@@ -119,7 +119,7 @@ export default function Dashboard() {
         const res = await apiFetch("/user/me");
         if (res.status === 401) {
           await logout();
-          navigate("/login", { replace: true });
+          navigate("/sign-in", { replace: true });
           return;
         }
 
@@ -146,7 +146,7 @@ export default function Dashboard() {
 
   async function handleLogout() {
     await logout();
-    navigate("/login", { replace: true });
+    navigate("/sign-in", { replace: true });
   }
 
   return (
