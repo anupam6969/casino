@@ -1,4 +1,5 @@
 import Footer from "../components/Footer.jsx";
+import ExclusivePlatforms from "../components/ExclusivePlatforms.jsx";
 import FAQSection from "../components/FAQSection.jsx";
 import GameProviders from "../components/GameProviders.jsx";
 import HeroBanner from "../components/HeroBanner.jsx";
@@ -15,6 +16,7 @@ export default function LandingPage() {
       <Navbar />
       <div className="relative z-10">
         <HeroBanner />
+        <ExclusivePlatforms />
         <HottestCasinoGames />
         <NoPurchaseCTA />
         <GameProviders />
