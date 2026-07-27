@@ -35,13 +35,13 @@ const linkGroups = [
 
 const supportLinks = [
   { label: "Start support chat", href: "/#support", icon: MessageCircle },
-  { label: "support@goldensweep.ai", href: "mailto:support@goldensweep.ai", icon: Mail },
   { label: "contact@goldensweep.ai", href: "mailto:contact@goldensweep.ai", icon: Mail },
+  { label: "support@goldensweep.ai", href: "mailto:support@goldensweep.ai", icon: Mail },
 ];
 
 function FooterHeading({ children }) {
   return (
-    <h3 className="flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-wide text-white md:justify-start">
+    <h3 className="flex items-center justify-start gap-3 text-xs font-semibold uppercase tracking-wide text-white">
       <span className="h-4 w-1 rounded-full bg-yellow-500" aria-hidden="true" />
       {children}
     </h3>
@@ -51,14 +51,14 @@ function FooterHeading({ children }) {
 function FooterLink({ link }) {
   if (link.to || link.href?.startsWith("/")) {
     return (
-      <Link to={link.to || link.href} className="inline-flex min-h-11 items-center justify-center text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
+      <Link to={link.to || link.href} className="inline-flex min-h-10 items-center justify-start text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
         {link.label}
       </Link>
     );
   }
 
   return (
-    <a href={link.href} className="inline-flex min-h-11 items-center justify-center text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
+    <a href={link.href} className="inline-flex min-h-10 items-center justify-start text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
       {link.label}
     </a>
   );
@@ -129,14 +129,14 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Footer columns collapse into a single comfortable mobile column. */}
-        <div className="mt-10 grid gap-8 text-center md:mt-14 md:grid-cols-3 md:text-left">
+        {/* Footer link groups keep two scannable columns on mobile. */}
+        <div className="mt-10 grid gap-8 text-left md:mt-14 md:grid-cols-3">
           {linkGroups.map((group) => (
             <section key={group.title} aria-labelledby={`${group.title.toLowerCase().replace(/\s+/g, "-")}-footer-heading`}>
               <FooterHeading>
                 <span id={`${group.title.toLowerCase().replace(/\s+/g, "-")}-footer-heading`}>{group.title}</span>
               </FooterHeading>
-              <ul className="mt-4 space-y-1 text-sm md:mt-5 md:space-y-3">
+              <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-[13px] leading-5 sm:text-sm md:mt-5 md:gap-y-3">
                 {group.links.map((link) => (
                   <li key={link.label}>
                     <FooterLink link={link} />
@@ -150,16 +150,16 @@ export default function Footer() {
             <FooterHeading>
               <span id="support-footer-heading">Support</span>
             </FooterHeading>
-            <ul className="mt-4 space-y-1 text-sm md:mt-5 md:space-y-3">
+            <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-[12px] leading-5 sm:text-[13px] md:mt-5 md:gap-y-3">
               {supportLinks.map(({ label, href, icon: Icon }) => (
                 <li key={label}>
                   {href.startsWith("/") ? (
-                    <Link to={href} className="inline-flex min-h-11 items-center justify-center gap-2 text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
+                    <Link to={href} className="inline-flex min-h-10 items-center justify-start gap-1.5 text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
                       <Icon className="h-4 w-4" />
                       {label}
                     </Link>
                   ) : (
-                    <a href={href} className="inline-flex min-h-11 items-center justify-center gap-2 break-all text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
+                    <a href={href} className="inline-flex min-h-10 items-center justify-start gap-1.5 break-all text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
                       <Icon className="h-4 w-4" />
                       {label}
                     </a>
