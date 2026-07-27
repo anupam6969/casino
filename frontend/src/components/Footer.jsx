@@ -51,14 +51,14 @@ function FooterHeading({ children }) {
 function FooterLink({ link }) {
   if (link.to || link.href?.startsWith("/")) {
     return (
-      <Link to={link.to || link.href} className="text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+      <Link to={link.to || link.href} className="inline-flex min-h-11 items-center justify-center text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
         {link.label}
       </Link>
     );
   }
 
   return (
-    <a href={link.href} className="text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+    <a href={link.href} className="inline-flex min-h-11 items-center justify-center text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
       {link.label}
     </a>
   );
@@ -98,10 +98,10 @@ export default function Footer() {
         <div className="h-full flex-1 bg-gradient-to-r from-purple-500 to-blue-500" />
       </div>
 
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
           <Link to="/" aria-label="GoldenSweep home" className="inline-flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
-            <img src={logoImg} alt="GoldenSweep Casino" className="h-28 w-auto object-contain sm:h-32 lg:h-36" loading="lazy" />
+            <img src={logoImg} alt="GoldenSweep Casino" className="h-24 w-auto max-w-[240px] object-contain sm:h-32 lg:h-36" loading="lazy" />
           </Link>
 
           <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-300">
@@ -129,13 +129,14 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 grid gap-10 text-center md:grid-cols-3 md:text-left">
+        {/* Footer columns collapse into a single comfortable mobile column. */}
+        <div className="mt-10 grid gap-8 text-center md:mt-14 md:grid-cols-3 md:text-left">
           {linkGroups.map((group) => (
             <section key={group.title} aria-labelledby={`${group.title.toLowerCase().replace(/\s+/g, "-")}-footer-heading`}>
               <FooterHeading>
                 <span id={`${group.title.toLowerCase().replace(/\s+/g, "-")}-footer-heading`}>{group.title}</span>
               </FooterHeading>
-              <ul className="mt-5 space-y-3 text-sm">
+              <ul className="mt-4 space-y-1 text-sm md:mt-5 md:space-y-3">
                 {group.links.map((link) => (
                   <li key={link.label}>
                     <FooterLink link={link} />
@@ -149,16 +150,16 @@ export default function Footer() {
             <FooterHeading>
               <span id="support-footer-heading">Support</span>
             </FooterHeading>
-            <ul className="mt-5 space-y-3 text-sm">
+            <ul className="mt-4 space-y-1 text-sm md:mt-5 md:space-y-3">
               {supportLinks.map(({ label, href, icon: Icon }) => (
                 <li key={label}>
                   {href.startsWith("/") ? (
-                    <Link to={href} className="inline-flex items-center justify-center gap-2 text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
+                    <Link to={href} className="inline-flex min-h-11 items-center justify-center gap-2 text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
                       <Icon className="h-4 w-4" />
                       {label}
                     </Link>
                   ) : (
-                    <a href={href} className="inline-flex items-center justify-center gap-2 text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
+                    <a href={href} className="inline-flex min-h-11 items-center justify-center gap-2 break-all text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70 md:justify-start">
                       <Icon className="h-4 w-4" />
                       {label}
                     </a>
@@ -169,7 +170,7 @@ export default function Footer() {
           </section>
         </div>
 
-        <div className="mt-14 flex flex-col gap-4 border-t border-white/10 py-6 text-center text-xs leading-6 text-gray-500 md:flex-row md:items-center md:justify-between md:text-left">
+        <div className="mt-10 flex flex-col gap-4 border-t border-white/10 py-6 text-center text-xs leading-6 text-gray-500 md:mt-14 md:flex-row md:items-center md:justify-between md:text-left">
           <p className="max-w-3xl">
             No purchase necessary. Void where prohibited. Must be 18+ to play. Bonus and coin availability may vary by account and jurisdiction.
           </p>

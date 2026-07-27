@@ -40,7 +40,7 @@ function GameTile({ game, size = "sm" }) {
 
 function GameThumbnails() {
   return (
-    <div className="mt-6 flex gap-2">
+    <div className="mt-5 flex flex-wrap gap-2 sm:mt-6">
       {thumbnailGames.map((game) => (
         <GameTile key={game.name} game={game} />
       ))}
@@ -55,7 +55,7 @@ function PhoneMockup({ accent = "cyan", buttonLabel }) {
   const badgeClass = isPink ? "bg-pink-500 text-white" : "bg-cyan-400 text-black";
 
   return (
-    <div className="relative z-10 mt-8 w-[230px] self-end rounded-[2.5rem] border-4 border-slate-800 bg-slate-900 p-2.5 shadow-2xl shadow-black/45 md:absolute md:bottom-[-18px] md:right-[-4px] md:mt-0 md:w-[250px] lg:right-6 lg:w-[260px]">
+    <div className="relative z-10 mx-auto mt-7 w-[220px] rounded-[2.5rem] border-4 border-slate-800 bg-slate-900 p-2.5 shadow-2xl shadow-black/45 md:absolute md:bottom-[-18px] md:right-[-4px] md:mx-0 md:mt-0 md:w-[250px] lg:right-6 lg:w-[260px]">
       <div className="overflow-hidden rounded-[2rem] bg-slate-950 p-3">
         <div className="flex items-center justify-between">
           <p className="font-['Dancing_Script'] text-lg font-bold leading-none text-white">goldensweep</p>
@@ -99,20 +99,21 @@ function PlatformCard({ title, subtitle, cta, theme, buttonLabel }) {
   const glowClass = isPink ? "bg-pink-500/20" : "bg-cyan-400/20";
 
   return (
-    <article className={`relative min-h-[450px] overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br p-10 shadow-2xl ${cardClass}`}>
+    <article className={`relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br p-5 shadow-2xl sm:p-7 md:min-h-[450px] md:rounded-3xl md:p-10 ${cardClass}`}>
       <div
         className="pointer-events-none absolute inset-0 opacity-20 [background-image:radial-gradient(circle,rgba(255,255,255,0.55)_1px,transparent_1px)] [background-size:18px_18px]"
         aria-hidden="true"
       />
       <div className={`pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full blur-3xl ${glowClass}`} aria-hidden="true" />
 
-      <div className="relative z-20 flex min-h-[370px] flex-col md:max-w-[52%] lg:max-w-[55%]">
-        <h2 className="max-w-sm text-4xl font-bold leading-tight text-white">{title}</h2>
-        <p className="mt-3 text-base text-gray-400">{subtitle}</p>
+      {/* Mobile stacks content naturally; desktop restores the split mockup composition. */}
+      <div className="relative z-20 flex flex-col md:min-h-[370px] md:max-w-[52%] lg:max-w-[55%]">
+        <h2 className="max-w-sm text-2xl font-bold leading-tight text-white sm:text-3xl md:text-4xl">{title}</h2>
+        <p className="mt-3 text-sm text-gray-400 sm:text-base">{subtitle}</p>
         <GameThumbnails />
         <Link
           to="/#support"
-          className={`mt-6 inline-flex w-fit items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:ring-offset-2 focus:ring-offset-slate-900 ${buttonClass}`}
+          className={`mt-6 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:ring-offset-2 focus:ring-offset-slate-900 md:w-fit ${buttonClass}`}
         >
           <MessageCircle className="h-4 w-4" />
           {cta}
@@ -126,7 +127,7 @@ function PlatformCard({ title, subtitle, cta, theme, buttonLabel }) {
 
 export default function WhiteLabelLeasing() {
   return (
-    <section className="w-full px-6 py-16">
+    <section className="w-full px-3 py-10 sm:px-6 sm:py-16">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 md:grid-cols-2">
         <PlatformCard
           title="White label this platform"

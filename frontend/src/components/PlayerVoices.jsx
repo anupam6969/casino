@@ -55,7 +55,7 @@ function RatingStars() {
 
 function TestimonialCard({ testimonial }) {
   return (
-    <article className="w-[280px] shrink-0 rounded-2xl border border-white/10 bg-slate-900/60 p-6 sm:w-[360px]">
+    <article className="w-[85vw] max-w-[360px] shrink-0 snap-start rounded-2xl border border-white/10 bg-slate-900/60 p-4 sm:w-[360px] sm:p-6">
       <div className="flex items-center gap-4">
         <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-full bg-gradient-to-br ${testimonial.avatarClass} text-sm font-black text-white shadow-lg shadow-black/25`}>
           {testimonial.name
@@ -76,19 +76,17 @@ function TestimonialCard({ testimonial }) {
 
 export default function PlayerVoices() {
   return (
-    <section className="overflow-hidden border-y border-yellow-500/20 px-6 py-12">
-      <div className="mx-auto mb-10 flex max-w-7xl justify-center">
+    <section className="overflow-hidden border-y border-yellow-500/20 px-3 py-10 sm:px-6 sm:py-12">
+      <div className="mx-auto mb-6 flex max-w-7xl justify-center sm:mb-10">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2">
           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
           <span className="text-xs font-semibold uppercase tracking-wide text-gray-300">Player Voices</span>
         </div>
       </div>
 
-      <div className="group relative">
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-slate-950 to-transparent" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-slate-950 to-transparent" />
-
-        <div className="flex w-max animate-marquee-rtl gap-4 will-change-transform group-hover:[animation-play-state:paused]">
+      <div className="group relative before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:z-10 before:w-6 before:bg-[linear-gradient(to_right,var(--bg-color),transparent)] after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:z-10 after:w-6 after:bg-[linear-gradient(to_left,var(--bg-color),transparent)] [--bg-color:#0D0D0D]">
+        {/* Mobile and desktop both auto-scroll, while still allowing touch swipe. */}
+        <div className="hide-scrollbar -mx-3 flex w-max animate-marquee-rtl snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-1 will-change-transform group-hover:[animation-play-state:paused] md:mx-0 md:gap-4 md:overflow-visible md:px-0">
           {marqueeItems.map((testimonial, index) => (
             <TestimonialCard key={`${testimonial.name}-${index}`} testimonial={testimonial} />
           ))}
