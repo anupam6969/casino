@@ -12,7 +12,7 @@ export default function NoPurchaseCTA() {
 
           <Link
             to="/sign-up"
-            className="flex min-h-11 w-full max-w-md items-center justify-center rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-500 px-4 py-3 text-center text-base font-bold text-black shadow-lg transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:ring-offset-2 focus:ring-offset-slate-900 sm:py-4 sm:text-lg"
+            className="flex min-h-11 w-full max-w-md items-center justify-center rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 px-4 py-3 text-center text-base font-bold text-black shadow-lg transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:ring-offset-2 focus:ring-offset-slate-900 sm:py-4 sm:text-lg"
           >
             Play Now
           </Link>

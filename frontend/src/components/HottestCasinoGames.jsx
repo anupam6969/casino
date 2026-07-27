@@ -55,7 +55,7 @@ export default function HottestCasinoGames() {
         {/* Mobile keeps the title and action on one row with no wrapping. */}
         <div className="mb-4 flex items-center justify-between gap-2 text-center">
           <h2 className="whitespace-nowrap text-base font-black min-[375px]:text-lg sm:text-xl md:text-2xl">
-            <span className="text-red-500">Hottest</span>
+            <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">Hottest</span>
             <span className="text-white"> Casino Games</span>
           </h2>
           <button

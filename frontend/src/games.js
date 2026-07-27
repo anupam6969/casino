@@ -20,6 +20,18 @@ import sinCityLogo from "./data/games/sin-city.png";
  * @property {string} link
  */
 
+/**
+ * Platform chips used by the white-label and leasing promo mockups.
+ * Logos can be wired here when the matching platform assets are added.
+ */
+export const promoPlatforms = [
+  { id: "juwa", name: "JUWA", logo: null },
+  { id: "milkyway", name: "MilkyWay", logo: null },
+  { id: "orion-stars", name: "Orion Stars", logo: null },
+  { id: "vblink", name: "Vblink", logo: null },
+  { id: "game-vault", name: "Game Vault", logo: null },
+];
+
 /** @type {Game[]} */
 export const games = [
 ];

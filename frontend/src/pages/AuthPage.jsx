@@ -29,7 +29,7 @@ function GoogleButton() {
   return (
     <button
       type="button"
-      className="flex w-full items-center justify-center gap-3 rounded-lg bg-white py-3.5 font-semibold text-black transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:ring-offset-2 focus:ring-offset-slate-900"
+      className="flex w-full items-center justify-center gap-3 rounded-lg bg-white py-3.5 font-semibold text-black transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/70 focus:ring-offset-2 focus:ring-offset-slate-900"
     >
       <GoogleIcon />
       Continue with Google
@@ -49,7 +49,7 @@ function Field({ label, name, value, onChange, placeholder, type = "text", autoC
         </label>
         {rightLabel}
       </div>
-      <div className="relative">
+      <div className="relative rounded-lg bg-white/20 p-px focus-within:bg-gradient-to-r focus-within:from-purple-600 focus-within:to-blue-500">
         <input
           id={name}
           name={name}
@@ -60,7 +60,7 @@ function Field({ label, name, value, onChange, placeholder, type = "text", autoC
           autoComplete={autoComplete}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${name}-error` : undefined}
-          className={`w-full rounded-lg border border-white/20 bg-transparent px-4 py-3.5 text-white placeholder:text-gray-500 focus:border-yellow-500 focus:outline-none focus:ring-0 ${
+          className={`w-full rounded-[7px] border border-transparent bg-slate-900/80 px-4 py-3.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-0 ${
             isPassword ? "pr-12" : ""
           }`}
         />
@@ -68,7 +68,7 @@ function Field({ label, name, value, onChange, placeholder, type = "text", autoC
           <button
             type="button"
             onClick={() => setVisible((current) => !current)}
-            className="absolute right-4 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-md text-gray-400 transition hover:bg-white/5 hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70"
+            className="absolute right-4 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-md text-gray-400 transition hover:bg-white/5 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/70"
             aria-label={visible ? "Hide password" : "Show password"}
           >
             {visible ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -109,7 +109,7 @@ function SubmitButton({ children, disabled, loading }) {
     <button
       type="submit"
       disabled={disabled || loading}
-      className="mt-6 w-full rounded-lg bg-gradient-to-r from-yellow-400 to-yellow-500 py-3.5 text-base font-bold text-black transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 disabled:hover:brightness-100"
+      className="mt-6 w-full rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 py-3.5 text-base font-bold text-white transition hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-blue-500/70 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 disabled:hover:brightness-100"
     >
       {loading ? "Please wait..." : children}
     </button>
@@ -278,19 +278,21 @@ export default function AuthPage() {
             <button
               type="button"
               onClick={() => setReferralOpen((current) => !current)}
-              className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-white/20 px-4 py-3.5 text-left text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70"
+              className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-white/20 px-4 py-3.5 text-left text-sm font-semibold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/70"
             >
               Referral code (optional)
               <ChevronDown className={`h-5 w-5 text-gray-400 transition ${referralOpen ? "rotate-180" : ""}`} />
             </button>
             {referralOpen && (
-              <input
-                name="referralCode"
-                value={form.referralCode}
-                onChange={handleChange}
-                placeholder="Enter referral code"
-                className="mt-2 w-full rounded-lg border border-white/20 bg-transparent px-4 py-3.5 text-white placeholder:text-gray-500 focus:border-yellow-500 focus:outline-none focus:ring-0"
-              />
+              <div className="mt-2 rounded-lg bg-white/20 p-px focus-within:bg-gradient-to-r focus-within:from-purple-600 focus-within:to-blue-500">
+                <input
+                  name="referralCode"
+                  value={form.referralCode}
+                  onChange={handleChange}
+                  placeholder="Enter referral code"
+                  className="w-full rounded-[7px] border border-transparent bg-slate-900/80 px-4 py-3.5 text-white placeholder:text-gray-500 focus:outline-none focus:ring-0"
+                />
+              </div>
             )}
           </div>
 
@@ -303,15 +305,15 @@ export default function AuthPage() {
                 setTermsAccepted(e.target.checked);
                 if (errors.terms) setErrors({ ...errors, terms: undefined });
               }}
-              className="mt-1 h-4 w-4 rounded border-white/20 bg-slate-950 accent-yellow-500 focus:ring-yellow-500"
+              className="mt-1 h-4 w-4 rounded border-white/20 bg-slate-950 accent-blue-500 focus:ring-blue-500"
             />
             <label htmlFor="terms">
               I am 18+ and agree to the{" "}
-              <Link to="/terms-and-conditions" className="font-semibold text-white hover:underline focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+              <Link to="/terms-and-conditions" className="font-semibold text-white hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/70">
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link to="/sweepstakes-rules" className="font-semibold text-white hover:underline focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+              <Link to="/sweepstakes-rules" className="font-semibold text-white hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/70">
                 Sweepstakes Rules
               </Link>
               . No purchase necessary.
@@ -326,7 +328,7 @@ export default function AuthPage() {
 
         <p className="mt-6 text-center text-sm text-gray-400">
           Already have an account?{" "}
-          <Link to="/sign-in" onClick={() => changeMode("signin")} className="font-bold text-yellow-500 hover:underline focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+          <Link to="/sign-in" onClick={() => changeMode("signin")} className="font-bold text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/70">
             Login here
           </Link>
         </p>
@@ -369,7 +371,7 @@ export default function AuthPage() {
           autoComplete="current-password"
           isPassword
           rightLabel={
-            <button type="button" className="text-xs text-gray-400 transition hover:text-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+            <button type="button" className="text-xs text-gray-400 transition hover:text-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500/70">
               Forgot password?
             </button>
           }
@@ -386,11 +388,11 @@ export default function AuthPage() {
       <div className="mt-6 space-y-3 text-center">
         <p className="text-sm text-gray-400">
           Don't have an account?{" "}
-          <Link to="/sign-up" onClick={() => changeMode("signup")} className="font-bold text-yellow-500 hover:underline focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+          <Link to="/sign-up" onClick={() => changeMode("signup")} className="font-bold text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/70">
             Create one now
           </Link>
         </p>
-        <button type="button" className="text-sm font-semibold text-yellow-500 hover:underline focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+        <button type="button" className="text-sm font-semibold text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/70">
           Reset password
         </button>
       </div>
