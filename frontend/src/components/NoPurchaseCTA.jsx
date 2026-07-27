@@ -8,7 +8,7 @@ export default function NoPurchaseCTA() {
           <h2 className="text-center text-2xl font-black uppercase leading-tight text-white md:text-4xl">
             No Purchase Necessary
           </h2>
-          <p className="mb-8 mt-3 text-base text-gray-400">It's always FREE to play at EasyPlay!</p>
+          <p className="mb-8 mt-3 text-base text-gray-400">It's always FREE to play at GoldenSweep!</p>
 
           <Link
             to="/sign-up"
@@ -24,11 +24,11 @@ export default function NoPurchaseCTA() {
               Terms
             </Link>
             <span aria-hidden="true">.</span>
-            <Link to="/#sweepstakes-rules" className="underline transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+            <Link to="/sweepstakes-rules" className="underline transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
               Sweepstakes Rules
             </Link>
             <span aria-hidden="true">.</span>
-            <Link to="/#responsible-play" className="underline transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+            <Link to="/responsible-play" className="underline transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
               Play responsibly
             </Link>
           </div>

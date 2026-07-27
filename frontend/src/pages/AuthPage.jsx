@@ -255,7 +255,7 @@ export default function AuthPage() {
       <AuthShell>
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white md:text-4xl">Registration</h1>
-          <p className="mx-auto mb-8 mt-2 max-w-sm text-sm text-gray-400 md:text-base">Create one goldensweep wallet for premium games and support.</p>
+          <p className="mx-auto mb-8 mt-2 max-w-sm text-sm text-gray-400 md:text-base">Create one GoldenSweep wallet for premium games and support.</p>
         </div>
 
         <GoogleButton />
@@ -312,7 +312,7 @@ export default function AuthPage() {
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link to="/#sweepstakes-rules" className="font-semibold text-white hover:underline focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+              <Link to="/sweepstakes-rules" className="font-semibold text-white hover:underline focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
                 Sweepstakes Rules
               </Link>
               . No purchase necessary.

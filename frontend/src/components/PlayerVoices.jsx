@@ -37,7 +37,7 @@ const testimonials = [
     name: "Henry M.",
     statusColor: "text-emerald-400",
     avatarClass: "from-rose-300 to-pink-800",
-    quote: "goldensweep feels cleaner than the other platforms I tried. Free coins, quick access, and the games load without fuss.",
+    quote: "GoldenSweep feels cleaner than the other platforms I tried. Free coins, quick access, and the games load without fuss.",
   },
 ];
 
@@ -66,7 +66,7 @@ function TestimonialCard({ testimonial }) {
         <div>
           <RatingStars />
           <h3 className="mt-1 text-base font-semibold text-white">{testimonial.name}</h3>
-          <p className={`mt-0.5 text-xs font-semibold uppercase tracking-wide ${testimonial.statusColor}`}>Verified goldensweep Player</p>
+          <p className={`mt-0.5 text-xs font-semibold uppercase tracking-wide ${testimonial.statusColor}`}>Verified GoldenSweep Player</p>
         </div>
       </div>
       <p className="mt-5 text-sm italic leading-relaxed text-gray-300">"{testimonial.quote}"</p>

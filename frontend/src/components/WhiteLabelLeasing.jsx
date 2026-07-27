@@ -58,7 +58,7 @@ function PhoneMockup({ accent = "cyan", buttonLabel }) {
     <div className="relative z-10 mt-8 w-[230px] self-end rounded-[2.5rem] border-4 border-slate-800 bg-slate-900 p-2.5 shadow-2xl shadow-black/45 md:absolute md:bottom-[-18px] md:right-[-4px] md:mt-0 md:w-[250px] lg:right-6 lg:w-[260px]">
       <div className="overflow-hidden rounded-[2rem] bg-slate-950 p-3">
         <div className="flex items-center justify-between">
-          <p className="font-['Dancing_Script'] text-lg font-bold leading-none text-white">goldensweep</p>
+          <p className="font-['Dancing_Script'] text-lg font-bold leading-none text-white">GoldenSweep</p>
           <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-black ${coinPillClass}`}>
             <Coins className="h-3 w-3" />
             $100
@@ -83,7 +83,7 @@ function PhoneMockup({ accent = "cyan", buttonLabel }) {
         </div>
 
         <div className={`mx-auto mt-3 w-fit rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wide ${badgeClass}`}>
-          goldensweep Branded
+          GoldenSweep Branded
         </div>
       </div>
     </div>
@@ -137,7 +137,7 @@ export default function WhiteLabelLeasing() {
         />
         <PlatformCard
           title="Leasing Program"
-          subtitle="Fully automated goldensweep website."
+          subtitle="Fully automated GoldenSweep website."
           cta="Lease now"
           theme="pink"
           buttonLabel="ADD GAME"

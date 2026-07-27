@@ -9,7 +9,7 @@ const sections = [
   {
     title: "1. Overview",
     body: [
-      "This Privacy Policy explains how Golden Sweep collects, uses, discloses, and protects information when you visit the website, create an account, contact support, or interact with our entertainment services.",
+      "This Privacy Policy explains how GoldenSweep collects, uses, discloses, and protects information when you visit the website, create an account, contact support, or interact with our entertainment services.",
       "By using the website, you acknowledge that your information will be handled as described in this policy.",
     ],
   },
@@ -93,7 +93,7 @@ const sections = [
   {
     title: "13. Contact",
     body: [
-      "Questions or privacy requests may be sent to support@Golden Sweep.example. Please include enough detail for us to identify your account and respond appropriately.",
+      "Questions or privacy requests may be sent to support@goldensweep.ai. Please include enough detail for us to identify your account and respond appropriately.",
     ],
   },
 ];
@@ -110,8 +110,8 @@ function setMetaDescription(content) {
 
 export default function PrivacyPolicy() {
   useEffect(() => {
-    document.title = "Privacy Policy | Golden Sweep";
-    setMetaDescription("Read the Golden Sweep Privacy Policy, including how account, usage, cookie, and support information may be handled.");
+    document.title = "Privacy Policy | GoldenSweep";
+    setMetaDescription("Read the GoldenSweep Privacy Policy, including how account, usage, cookie, and support information may be handled.");
     window.scrollTo(0, 0);
   }, []);
 

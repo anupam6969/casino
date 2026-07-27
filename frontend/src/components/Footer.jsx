@@ -26,9 +26,9 @@ const linkGroups = [
       { label: "FAQ", href: "/#faq" },
       { label: "Terms & Conditions", to: "/terms-and-conditions" },
       { label: "Privacy Policy", to: "/privacy-policy" },
-      { label: "Sweepstakes Rules", href: "/#sweepstakes-rules" },
-      { label: "Redemption Rules", href: "/#redemption-rules" },
-      { label: "Responsible Play", href: "/#responsible-play" },
+      { label: "Sweepstakes Rules", to: "/sweepstakes-rules" },
+      { label: "Redemption Rules", to: "/redemption-rules" },
+      { label: "Responsible Play", to: "/responsible-play" },
     ],
   },
 ];

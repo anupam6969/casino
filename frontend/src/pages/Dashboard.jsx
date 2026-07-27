@@ -57,12 +57,12 @@ const fadeUp = {
 
 function DashboardLogo() {
   return (
-    <Link to="/" className="flex items-center gap-3" aria-label="Golden Sweep home">
+    <Link to="/" className="flex items-center gap-3" aria-label="GoldenSweep home">
       <span className="grid h-11 w-11 place-items-center rounded-xl border border-gold-200/50 bg-gradient-to-br from-gold-200 via-gold-300 to-gold-500 text-black shadow-gold">
         <Trophy size={22} />
       </span>
       <span>
-        <span className="block font-heading text-lg font-bold leading-none text-white">Golden Sweep</span>
+        <span className="block font-heading text-lg font-bold leading-none text-white">GoldenSweep</span>
         <span className="block text-[10px] font-semibold uppercase tracking-[0.28em] text-gold-200">Sweeps Club</span>
       </span>
     </Link>

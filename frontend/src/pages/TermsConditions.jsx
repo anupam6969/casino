@@ -8,7 +8,7 @@ import Footer from "../components/Footer.jsx";
 const sections = [
   {
     body: [
-      "Welcome to Golden Sweep. These Terms & Conditions govern your access to and use of our website, services, applications, promotions, and related features.",
+      "Welcome to GoldenSweep. These Terms & Conditions govern your access to and use of our website, services, applications, promotions, and related features.",
       "By accessing or using our Platform, creating an account, or participating in any activity available through the Platform, you agree to be legally bound by these Terms. If you do not agree with these Terms, please do not use our services.",
     ],
   },
@@ -53,7 +53,7 @@ const sections = [
   {
     title: "6. Intellectual Property",
     body: [
-      "The website, brand assets, interface, text, graphics, software, design elements, and other content are owned by Golden Sweep or its licensors and are protected by intellectual property laws.",
+      "The website, brand assets, interface, text, graphics, software, design elements, and other content are owned by GoldenSweep or its licensors and are protected by intellectual property laws.",
       "You may not copy, modify, distribute, reverse engineer, or create derivative works from the website except as expressly permitted by us in writing.",
     ],
   },
@@ -74,7 +74,7 @@ const sections = [
   {
     title: "9. Limitation of Liability",
     body: [
-      "To the fullest extent permitted by law, Golden Sweep and its affiliates will not be liable for indirect, incidental, special, consequential, exemplary, or punitive damages arising from your use of the website.",
+      "To the fullest extent permitted by law, GoldenSweep and its affiliates will not be liable for indirect, incidental, special, consequential, exemplary, or punitive damages arising from your use of the website.",
       "Our total liability for any claim related to the website will be limited to the amount you paid to us, if any, during the three months preceding the event giving rise to the claim.",
     ],
   },
@@ -95,7 +95,7 @@ const sections = [
   {
     title: "12. Contact",
     body: [
-      "Questions about these Terms & Conditions may be sent to support@Golden Sweep.example. Please include enough detail for us to review and respond to your request.",
+      "Questions about these Terms & Conditions may be sent to support@goldensweep.ai. Please include enough detail for us to review and respond to your request.",
     ],
   },
 ];
@@ -112,9 +112,9 @@ function setMetaDescription(content) {
 
 export default function TermsConditions() {
   useEffect(() => {
-    document.title = "Terms & Conditions | Golden Sweep";
+    document.title = "Terms & Conditions | GoldenSweep";
     setMetaDescription(
-      "Read the Golden Sweep Terms & Conditions, including eligibility, account use, promotions, rewards, and platform rules.",
+      "Read the GoldenSweep Terms & Conditions, including eligibility, account use, promotions, rewards, and platform rules.",
     );
     window.scrollTo(0, 0);
   }, []);
