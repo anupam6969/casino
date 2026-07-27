@@ -25,7 +25,7 @@ export default function GameProviders() {
     <section className="overflow-hidden border-b border-yellow-500/20 px-3 py-10 sm:px-6 sm:py-12">
       <h2 className="mb-6 text-center text-xl font-bold text-white sm:mb-10 sm:text-2xl md:text-3xl">Game Providers</h2>
 
-      <div className="group relative before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:z-10 before:w-6 before:bg-[linear-gradient(to_right,var(--bg-color),transparent)] after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:z-10 after:w-6 after:bg-[linear-gradient(to_left,var(--bg-color),transparent)] [--bg-color:#0D0D0D]">
+      <div className="group relative">
         {/* Mobile and desktop both auto-scroll, while still allowing touch swipe. */}
         <div className="hide-scrollbar -mx-3 flex w-max animate-marquee snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-1 will-change-transform group-hover:[animation-play-state:paused] md:mx-0 md:gap-4 md:overflow-visible md:px-0">
           {marqueeProviders.map((provider, index) => (
