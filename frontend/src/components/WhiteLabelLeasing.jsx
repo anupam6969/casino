@@ -1,27 +1,23 @@
 import { Link } from "react-router-dom";
 import { Coins, MessageCircle } from "lucide-react";
 
-import gameVaultImage from "../data/images/gamevault.png";
-import milkyImage from "../data/images/milky.jpg";
-import orionImage from "../data/images/orion.jpg";
-
 const featuredGames = {
   cyan: { name: "JUWA", className: "from-cyan-300 via-teal-500 to-slate-950" },
-  pink: { name: "Orion Stars", image: orionImage, className: "from-pink-500/80 via-purple-600/70 to-slate-950" },
+  pink: { name: "Orion Stars", className: "from-pink-500/80 via-purple-600/70 to-slate-950" },
 };
 
 const thumbnailGames = [
   { name: "JUWA", className: "from-cyan-300 via-teal-500 to-slate-900" },
-  { name: "MilkyWay", image: milkyImage, className: "from-indigo-400 to-slate-900" },
-  { name: "Orion Stars", image: orionImage, className: "from-purple-400 to-slate-900" },
+  { name: "MilkyWay", className: "from-indigo-400 to-slate-900" },
+  { name: "Orion Stars", className: "from-purple-400 to-slate-900" },
   { name: "Vblink", className: "from-pink-400 via-fuchsia-600 to-slate-900" },
-  { name: "Game Vault", image: gameVaultImage, className: "from-amber-300 to-slate-900" },
+  { name: "Game Vault", className: "from-amber-300 to-slate-900" },
 ];
 
 const phoneGames = [
   { name: "JUWA", className: "from-cyan-300 via-teal-500 to-slate-900" },
-  { name: "MilkyWay", image: milkyImage, className: "from-indigo-400 to-slate-900" },
-  { name: "Orion Stars", image: orionImage, className: "from-purple-400 to-slate-900" },
+  { name: "MilkyWay", className: "from-indigo-400 to-slate-900" },
+  { name: "Orion Stars", className: "from-purple-400 to-slate-900" },
   { name: "Vblink", className: "from-pink-400 via-fuchsia-600 to-slate-900" },
 ];
 

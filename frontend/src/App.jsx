@@ -1,16 +1,13 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import AuthPage from "./pages/AuthPage.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
 import FAQPage from "./pages/FAQPage.jsx";
-import GameLaunch from "./pages/GameLaunch.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import RedemptionRules from "./pages/RedemptionRules.jsx";
 import ResponsiblePlay from "./pages/ResponsiblePlay.jsx";
 import SweepstakesRules from "./pages/SweepstakesRules.jsx";
 import TermsConditions from "./pages/TermsConditions.jsx";
-import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
 function PublicAuthRoute({ children }) {
@@ -21,7 +18,8 @@ function PublicAuthRoute({ children }) {
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    // Authenticated users stay in the public landing experience.
+    return <LandingPage />;
   }
 
   return children;
@@ -36,17 +34,13 @@ function AuthLoadingScreen() {
 }
 
 function HomeRoute() {
-  const { isAuthenticated, loading } = useAuth();
-  const { hash } = useLocation();
+  const { loading } = useAuth();
 
   if (loading) {
     return <AuthLoadingScreen />;
   }
 
-  if (isAuthenticated && !hash) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
+  // The landing page remains accessible after login.
   return <LandingPage />;
 }
 
@@ -137,10 +131,6 @@ export default function App() {
         <Route path="/responsible-play" element={<ResponsiblePlay />} />
         <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/play/:gameId" element={<GameLaunch />} />
-        </Route>
       </Routes>
     </>
   );

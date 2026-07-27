@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { AlertCircle, Check, ChevronDown, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import Navbar from "../components/Navbar.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -146,7 +146,6 @@ export default function AuthPage() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const { signup, signin } = useAuth();
-  const navigate = useNavigate();
 
   const isSignup = mode === "signup";
   const passwordChecks = useMemo(
@@ -238,7 +237,7 @@ export default function AuthPage() {
       } else {
         await signin({ identifier: form.identifier, password: form.password });
       }
-      navigate("/dashboard");
+      // Auth context/localStorage are updated above; stay on the public experience after login/signup.
     } catch (err) {
       if (err?.fields) {
         setErrors(err.fields);

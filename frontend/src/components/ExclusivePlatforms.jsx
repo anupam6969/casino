@@ -1,36 +1,41 @@
-import { Link } from "react-router-dom";
-import { games } from "../data/games.js";
+import { ImageIcon } from "lucide-react";
+
+// TODO: replace with real platform logos and names.
+const platforms = Array.from({ length: 8 }, (_, index) => ({
+  id: `platform-${index + 1}`,
+  name: "",
+  image: null,
+}));
+
+const marqueePlatforms = [...platforms, ...platforms];
+
+function PlatformCard({ platform }) {
+  return (
+    <article className="flex w-[136px] shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-white/10 bg-slate-900/80 p-3 text-center shadow-lg shadow-black/20 sm:w-[150px] sm:rounded-2xl sm:p-4">
+      <div className="grid aspect-square w-full place-items-center rounded-lg border border-white/10 bg-slate-800/80 text-gray-400">
+        {platform.image ? (
+          <img src={platform.image} alt={platform.name ? `${platform.name} logo` : "Platform logo"} className="h-full w-full object-contain p-3" loading="lazy" />
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <ImageIcon className="h-6 w-6 text-gray-500" aria-hidden="true" />
+            <span className="text-xs font-black uppercase tracking-wide text-gray-500">IMG</span>
+          </div>
+        )}
+      </div>
+    </article>
+  );
+}
 
 export default function ExclusivePlatforms() {
   return (
-    <section className="w-full px-3 py-8 sm:px-6 sm:py-10">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h2 className="whitespace-nowrap text-lg font-black text-white sm:text-2xl">Exclusive Platforms</h2>
-          <Link to="/sign-up" className="inline-flex min-h-11 shrink-0 items-center text-xs font-bold uppercase tracking-wide text-yellow-400 transition hover:text-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
-            See All
-          </Link>
-        </div>
+    <section className="overflow-hidden px-3 py-10 sm:px-6 sm:py-12">
+      <h2 className="mb-6 text-center text-xl font-bold text-white sm:mb-10 sm:text-2xl md:text-3xl">Exclusive Platforms</h2>
 
-        {/* Mobile uses snap scrolling with a visible next-card peek; desktop remains a full row. */}
-        <div className="hide-scrollbar -mx-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-1 sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-6 lg:overflow-visible lg:px-0">
-          {games.slice(1, 7).map((game) => (
-            <Link
-              key={game.id}
-              to="/sign-up"
-              className="group w-[38vw] min-w-[120px] max-w-[150px] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-slate-900/70 text-center shadow-lg shadow-black/20 transition hover:-translate-y-1 hover:border-yellow-500/40 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 sm:w-[24vw] lg:w-auto lg:min-w-0 lg:max-w-none"
-            >
-              <div className="relative aspect-square overflow-hidden">
-                <img src={game.image} alt={`${game.name} platform`} className="h-full w-full object-cover transition duration-500 group-hover:scale-110" loading="lazy" />
-                <span className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-                <span className="absolute left-2 top-2 grid h-8 w-8 place-items-center rounded-lg border border-yellow-500/35 bg-black/60 text-[10px] font-black text-yellow-300 backdrop-blur">
-                  {game.name.slice(0, 2).toUpperCase()}
-                </span>
-              </div>
-              <div className="flex min-h-11 items-center justify-center px-2 py-2">
-                <h3 className="text-xs font-bold uppercase leading-tight text-white sm:text-sm">{game.name}</h3>
-              </div>
-            </Link>
+      <div className="relative">
+        {/* Marquee row reuses the existing horizontal snap + hidden-scrollbar treatment used by other card rows. */}
+        <div className="hide-scrollbar -mx-3 flex w-max animate-marquee snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-1 will-change-transform hover:[animation-play-state:paused] sm:-mx-6 sm:gap-4 sm:px-6 md:mx-0 md:px-0">
+          {marqueePlatforms.map((platform, index) => (
+            <PlatformCard key={`${platform.id}-${index}`} platform={platform} />
           ))}
         </div>
       </div>
