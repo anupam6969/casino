@@ -23,7 +23,7 @@ const linkGroups = [
   {
     title: "Legal",
     links: [
-      { label: "FAQ", href: "/#faq" },
+      { label: "FAQ", to: "/faq" },
       { label: "Terms & Conditions", to: "/terms-and-conditions" },
       { label: "Privacy Policy", to: "/privacy-policy" },
       { label: "Sweepstakes Rules", to: "/sweepstakes-rules" },

@@ -2,6 +2,7 @@ import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import AuthPage from "./pages/AuthPage.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
+import FAQPage from "./pages/FAQPage.jsx";
 import GameLaunch from "./pages/GameLaunch.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
@@ -135,6 +136,7 @@ export default function App() {
         <Route path="/redemption-rules" element={<RedemptionRules />} />
         <Route path="/responsible-play" element={<ResponsiblePlay />} />
         <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
+        <Route path="/faq" element={<FAQPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/play/:gameId" element={<GameLaunch />} />

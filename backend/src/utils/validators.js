@@ -22,9 +22,10 @@ function validateSignup({ username, email, password }) {
 
 function validateSignin({ identifier, password }) {
   const errors = {};
+  const trimmedIdentifier = typeof identifier === "string" ? identifier.trim() : "";
 
-  if (!identifier || typeof identifier !== "string" || !EMAIL_REGEX.test(identifier.trim())) {
-    errors.identifier = "Enter a valid email address.";
+  if (!trimmedIdentifier || (!EMAIL_REGEX.test(trimmedIdentifier) && !USERNAME_REGEX.test(trimmedIdentifier))) {
+    errors.identifier = "Enter a valid email address or username.";
   }
 
   if (!password || typeof password !== "string" || password.length === 0) {

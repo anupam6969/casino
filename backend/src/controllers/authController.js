@@ -86,7 +86,10 @@ async function signin(req, res) {
 
     const user = await prisma.user.findFirst({
       where: {
-        email: normalizedIdentifier,
+        OR: [
+          { email: normalizedIdentifier },
+          { username: { equals: identifier, mode: "insensitive" } },
+        ],
       },
     });
 
