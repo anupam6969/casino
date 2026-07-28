@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronDown, Coins, LogOut } from "lucide-react";
+import { ChevronDown, Coins, LayoutDashboard, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import logoImg from "../data/images/logo.png";
 
@@ -91,6 +91,14 @@ function LoggedInMenu() {
               {coinBalance}
             </p>
           </div>
+          <Link
+            to="/dashboard"
+            onClick={() => setOpen(false)}
+            className="flex min-h-11 w-full items-center gap-3 border-b border-white/10 px-4 text-left text-sm font-semibold text-gray-300 transition hover:bg-white/[0.06] hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Dashboard
+          </Link>
           <button
             type="button"
             onClick={handleLogout}
@@ -122,7 +130,16 @@ export default function Navbar() {
         </div>
         {/* Auth-aware rendering: guests see Login/Sign Up, authenticated users see account controls. */}
         {isAuthenticated ? (
-          <LoggedInMenu />
+          <div className="flex min-w-0 items-center gap-1.5 min-[375px]:gap-2 lg:gap-3">
+            <Link
+              to="/dashboard"
+              className="hidden min-h-11 shrink-0 items-center gap-2 rounded-lg border border-yellow-500/50 px-4 text-sm font-bold text-gold-200 transition hover:bg-yellow-500 hover:text-black focus:outline-none focus:ring-2 focus:ring-yellow-500/70 sm:inline-flex"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              Dashboard
+            </Link>
+            <LoggedInMenu />
+          </div>
         ) : (
           <div className="flex min-w-0 items-center gap-1.5 min-[375px]:gap-2 lg:gap-4">
             <span className="inline-flex h-11 shrink-0 items-center gap-1.5 bg-transparent p-0 text-[11px] font-semibold text-white sm:gap-2 sm:text-sm">

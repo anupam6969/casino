@@ -1,13 +1,27 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 import { hottestCasinoGames } from "../games.js";
 
 function HotGameCard({ game }) {
   const [logoFailed, setLogoFailed] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const isExternal = game.redirectLink?.startsWith("http");
   const cardClass =
     "group relative block cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-slate-800 text-left transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 sm:rounded-xl";
   const logoAvailable = Boolean(game.logo && !logoFailed);
+
+  function handlePlayClick(e) {
+    if (isAuthenticated) return;
+
+    e.preventDefault();
+    navigate("/sign-in", {
+      state: {
+        redirectTo: game.redirectLink,
+      },
+    });
+  }
 
   const content = (
     <>
@@ -35,14 +49,14 @@ function HotGameCard({ game }) {
 
   if (isExternal) {
     return (
-      <a href={game.redirectLink} target="_blank" rel="noopener noreferrer" className={cardClass}>
+      <a href={game.redirectLink} target="_blank" rel="noopener noreferrer" className={cardClass} onClick={handlePlayClick}>
         {content}
       </a>
     );
   }
 
   return (
-    <Link to={game.redirectLink || "#"} className={cardClass}>
+    <Link to={game.redirectLink || "#"} className={cardClass} onClick={handlePlayClick}>
       {content}
     </Link>
   );

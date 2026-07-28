@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import AuthPage from "./pages/AuthPage.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 import FAQPage from "./pages/FAQPage.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
@@ -8,6 +9,7 @@ import RedemptionRules from "./pages/RedemptionRules.jsx";
 import ResponsiblePlay from "./pages/ResponsiblePlay.jsx";
 import SweepstakesRules from "./pages/SweepstakesRules.jsx";
 import TermsConditions from "./pages/TermsConditions.jsx";
+import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
 function PublicAuthRoute({ children }) {
@@ -18,7 +20,6 @@ function PublicAuthRoute({ children }) {
   }
 
   if (isAuthenticated) {
-    // Authenticated users stay in the public landing experience.
     return <LandingPage />;
   }
 
@@ -97,7 +98,7 @@ export default function App() {
           path="/login"
           element={
             <PublicAuthRoute>
-              <Navigate to="/sign-in" replace />
+              <AuthPage />
             </PublicAuthRoute>
           }
         />
@@ -125,6 +126,9 @@ export default function App() {
             </PublicAuthRoute>
           }
         />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
         <Route path="/terms-and-conditions" element={<TermsConditions />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/redemption-rules" element={<RedemptionRules />} />

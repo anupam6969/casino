@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle, Check, ChevronDown, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import Navbar from "../components/Navbar.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -130,6 +130,8 @@ function AuthShell({ children }) {
 export default function AuthPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const location = useLocation();
+  const navigate = useNavigate();
+  const redirectTo = location.state?.redirectTo;
   const modeParam = searchParams.get("mode");
   const initialMode = location.pathname === "/sign-up" || modeParam === "signup" ? "signup" : "signin";
   const [mode, setMode] = useState(initialMode);
@@ -237,7 +239,7 @@ export default function AuthPage() {
       } else {
         await signin({ identifier: form.identifier, password: form.password });
       }
-      // Auth context/localStorage are updated above; stay on the public experience after login/signup.
+      navigate("/", { replace: true });
     } catch (err) {
       if (err?.fields) {
         setErrors(err.fields);
@@ -328,7 +330,7 @@ export default function AuthPage() {
 
         <p className="mt-6 text-center text-sm text-gray-400">
           Already have an account?{" "}
-          <Link to="/sign-in" onClick={() => changeMode("signin")} className="font-bold text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/70">
+          <Link to="/sign-in" state={{ redirectTo }} onClick={() => changeMode("signin")} className="font-bold text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/70">
             Login here
           </Link>
         </p>
@@ -388,7 +390,7 @@ export default function AuthPage() {
       <div className="mt-6 space-y-3 text-center">
         <p className="text-sm text-gray-400">
           Don't have an account?{" "}
-          <Link to="/sign-up" onClick={() => changeMode("signup")} className="font-bold text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/70">
+          <Link to="/sign-up" state={{ redirectTo }} onClick={() => changeMode("signup")} className="font-bold text-blue-400 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-500/70">
             Create one now
           </Link>
         </p>
