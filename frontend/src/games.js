@@ -11,6 +11,12 @@ import castleSmashersLogo from "./data/games/castle-smashers.png";
 import fortuneMonkeyLogo from "./data/games/fortune-monkey.png";
 import pirateQueenLogo from "./data/games/pirates.png";
 import sinCityLogo from "./data/games/sin-city.png";
+import apolloRayOfLuckLogo from "./data/games/apollo-ray-of-luck.jpg";
+import juwaLogo from "./data/games/juwa.jpg";
+import milkywayLogo from "./data/games/milky.jpg";
+import orionStarsLogo from "./data/games/orion.jpg";
+import vblinkLogo from "./data/games/vblink.jpg";
+import gameVaultLogo from "./data/games/gamevault.png";
 
 /**
  * @typedef {Object} Game
@@ -25,11 +31,11 @@ import sinCityLogo from "./data/games/sin-city.png";
  * Logos can be wired here when the matching platform assets are added.
  */
 export const promoPlatforms = [
-  { id: "juwa", name: "JUWA", logo: null },
-  { id: "milkyway", name: "MilkyWay", logo: null },
-  { id: "orion-stars", name: "Orion Stars", logo: null },
-  { id: "vblink", name: "Vblink", logo: null },
-  { id: "game-vault", name: "Game Vault", logo: null },
+  { id: "juwa", name: "JUWA", logo: juwaLogo },
+  { id: "milkyway", name: "MilkyWay", logo: milkywayLogo },
+  { id: "orion-stars", name: "Orion Stars", logo: orionStarsLogo },
+  { id: "vblink", name: "Vblink", logo: vblinkLogo },
+  { id: "game-vault", name: "Game Vault", logo: gameVaultLogo },
 ];
 
 /** @type {Game[]} */
@@ -43,7 +49,7 @@ export const hottestCasinoGames = [
     provider: "JILI",
     gradient: "from-rose-500 via-orange-500 to-slate-900",
     logo: pirateQueenLogo,
-    redirectLink: "/play/pirate-queen-2",
+    redirectLink: "https://www.gambl.com/games/jili-games/pirate-queen-2",
   },
   {
     id: "sin-city",
@@ -51,7 +57,7 @@ export const hottestCasinoGames = [
     provider: "JILI",
     gradient: "from-fuchsia-500 via-purple-600 to-slate-900",
     logo: sinCityLogo,
-    redirectLink: "/play/sin-city",
+    redirectLink: "https://www.gambl.com/games/tada-gaming/sin-city",
   },
   {
     id: "fortune-monkey",
@@ -59,7 +65,7 @@ export const hottestCasinoGames = [
     provider: "JILI",
     gradient: "from-yellow-400 via-amber-600 to-slate-900",
     logo: fortuneMonkeyLogo,
-    redirectLink: "/play/fortune-monkey",
+    redirectLink: "https://www.gambl.com/games/tada-gaming/fortune-monkey",
   },
   {
     id: "boxing-king",
@@ -67,7 +73,7 @@ export const hottestCasinoGames = [
     provider: "JILI",
     gradient: "from-red-500 via-stone-700 to-slate-900",
     logo: boxingKingLogo,
-    redirectLink: "/play/boxing-king",
+    redirectLink: "https://www.gambl.com/games/jili-games/boxing-king",
   },
   {
     id: "beach-fun",
@@ -91,7 +97,7 @@ export const hottestCasinoGames = [
     provider: "CP",
     gradient: "from-lime-400 via-emerald-700 to-slate-900",
     logo: bigFiveLogo,
-    redirectLink: "/play/big-five",
+    redirectLink: "https://slotcatalog.com/en/slots/The-Big-Five",
   },
   {
     id: "blessing-of-ice-and-fire",
@@ -122,7 +128,7 @@ export const hottestCasinoGames = [
     name: "Apollo Ray of Luck",
     provider: "FASTSPIN",
     gradient: "from-yellow-200 via-orange-500 to-slate-900",
-    logo: "/assets/games/apollo-ray-of-luck.png",
+    logo: apolloRayOfLuckLogo,
     redirectLink: "/play/apollo-ray-of-luck",
   },
   {
@@ -131,7 +137,7 @@ export const hottestCasinoGames = [
     provider: "PIXMOVE",
     gradient: "from-amber-300 via-yellow-700 to-slate-900",
     logo: bookOfGizaLogo,
-    redirectLink: "/play/book-of-giza",
+    redirectLink: "https://www.gambl.com/games/dwg/book-of-giza-gold",
   },
   {
     id: "call-of-the-jungle",
@@ -139,7 +145,7 @@ export const hottestCasinoGames = [
     provider: "PIXMOVE",
     gradient: "from-emerald-300 via-green-800 to-slate-900",
     logo: callOfTheJungleLogo,
-    redirectLink: "/play/call-of-the-jungle",
+    redirectLink: "https://slotcatalog.com/en/slots/call-of-the-jungle",
   },
   {
     id: "captain-dodger",
@@ -147,7 +153,7 @@ export const hottestCasinoGames = [
     provider: "PIXMOVE",
     gradient: "from-blue-300 via-indigo-700 to-slate-900",
     logo: captainDodgerLogo,
-    redirectLink: "/play/captain-dodger",
+    redirectLink: "https://slotcatalog.com/en/slots/captain-dodger",
   },
   {
     id: "castle-smashers",
@@ -155,6 +161,6 @@ export const hottestCasinoGames = [
     provider: "PIXMOVE",
     gradient: "from-purple-300 via-pink-700 to-slate-900",
     logo: castleSmashersLogo,
-    redirectLink: "/play/castle-smashers",
+    redirectLink: "https://slotcatalog.com/en/slots/castle-smashers",
   },
 ];

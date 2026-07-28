@@ -16,10 +16,15 @@ const chipStyles = {
   "game-vault": { background: "linear-gradient(135deg, #EF9F27, #412402)" },
 };
 
-const promoGames = promoPlatforms.map((platform) => ({
-  ...platform,
-  style: chipStyles[platform.id],
-}));
+const promoGameIds = ["juwa", "milkyway", "orion-stars", "vblink", "game-vault"];
+
+const promoGames = promoGameIds
+  .map((id) => promoPlatforms.find((platform) => platform.id === id))
+  .filter(Boolean)
+  .map((platform) => ({
+    ...platform,
+    style: chipStyles[platform.id],
+  }));
 
 const thumbnailGames = promoGames;
 const phoneGames = promoGames.slice(0, 4);
@@ -38,7 +43,7 @@ function GameTile({ game, size = "sm" }) {
       {logoAvailable && (
         <img
           src={game.logo}
-          alt={`${game.name} logo`}
+          alt={game.name}
           className="absolute inset-0 h-full w-full object-contain p-1 opacity-90"
           loading="lazy"
           onError={() => setLogoFailed(true)}
