@@ -23,10 +23,11 @@ function setAuthCookie(res, token) {
 function toPublicUser(user) {
   return {
     id: user.id,
-    name: user.username,
+    name: user.name || user.username,
     username: user.username,
     email: user.email,
-    coinBalance: 5000,
+    profilePicture: user.profilePicture,
+    coinBalance: user.coinBalance ?? 5000,
     accountStatus: "Active",
   };
 }
@@ -56,6 +57,7 @@ async function signup(req, res) {
 
     const user = await prisma.user.create({
       data: {
+        name: username,
         username,
         email,
         passwordHash,
@@ -135,4 +137,4 @@ async function logout(req, res) {
   return res.status(200).json({ message: "Logged out." });
 }
 
-module.exports = { signup, signin, me, logout };
+module.exports = { signup, signin, me, logout, signToken, setAuthCookie, toPublicUser };

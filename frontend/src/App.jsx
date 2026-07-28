@@ -1,5 +1,6 @@
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { API_BASE } from "./api/apiClient.js";
 import AuthPage from "./pages/AuthPage.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
 import FAQPage from "./pages/FAQPage.jsx";
@@ -81,6 +82,37 @@ function ScrollToHash() {
 }
 
 export default function App() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const token = searchParams.get("token");
+    if (!token) return;
+
+    async function completeGoogleLogin() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (!res.ok) throw data;
+
+        login(data.user, token);
+      } catch {
+        navigate("/login?error=google_auth_failed", { replace: true });
+        return;
+      }
+
+      window.history.replaceState(null, "", `${window.location.pathname}${window.location.hash}`);
+    }
+
+    completeGoogleLogin();
+  }, [login, navigate]);
+
   return (
     <>
       <ScrollToHash />

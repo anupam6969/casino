@@ -2,20 +2,35 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const passport = require("passport");
 const authRoutes = require("./routes/auth");
 const authMiddleware = require("./middleware/authMiddleware");
 const { me } = require("./controllers/authController");
+const configurePassport = require("./config/passport");
 
 const app = express();
+const allowedOrigins = new Set([
+  "http://localhost:5173",
+  "https://casino-dusky-two.vercel.app",
+  process.env.FRONTEND_ORIGIN,
+].filter(Boolean));
+
+configurePassport(passport);
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_ORIGIN || "http://localhost:5173",
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.has(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
+app.use(passport.initialize());
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

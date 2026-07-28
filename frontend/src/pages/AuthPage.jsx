@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle, Check, ChevronDown, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { API_BASE } from "../api/apiClient.js";
 import Navbar from "../components/Navbar.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
+
+const BACKEND_URL = API_BASE.replace(/\/api\/?$/, "");
 
 function GoogleIcon() {
   return (
@@ -26,9 +29,14 @@ function Divider({ children }) {
 }
 
 function GoogleButton() {
+  function handleGoogleAuth() {
+    window.location.href = `${BACKEND_URL}/api/auth/google`;
+  }
+
   return (
     <button
       type="button"
+      onClick={handleGoogleAuth}
       className="flex w-full items-center justify-center gap-3 rounded-lg bg-white py-3.5 font-semibold text-black transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500/70 focus:ring-offset-2 focus:ring-offset-slate-900"
     >
       <GoogleIcon />
@@ -133,6 +141,7 @@ export default function AuthPage() {
   const navigate = useNavigate();
   const redirectTo = location.state?.redirectTo;
   const modeParam = searchParams.get("mode");
+  const authError = searchParams.get("error");
   const initialMode = location.pathname === "/sign-up" || modeParam === "signup" ? "signup" : "signin";
   const [mode, setMode] = useState(initialMode);
   const [form, setForm] = useState({
@@ -171,8 +180,8 @@ export default function AuthPage() {
   useEffect(() => {
     const routeMode = location.pathname === "/sign-up" || modeParam === "signup" ? "signup" : "signin";
     setMode(routeMode);
-    setErrors({});
-  }, [location.pathname, modeParam]);
+    setErrors(authError === "google_auth_failed" ? { general: "Google sign-in failed. Please try again." } : {});
+  }, [authError, location.pathname, modeParam]);
 
   function changeMode(nextMode) {
     setMode(nextMode);
@@ -342,7 +351,7 @@ export default function AuthPage() {
     <AuthShell>
       <div className="text-center">
         <h1 className="text-3xl font-bold text-white md:text-4xl">Login</h1>
-        <p className="mt-2 text-sm text-gray-400 md:text-base">Sign in to your Easy Play account</p>
+        <p className="mt-2 text-sm text-gray-400 md:text-base">Sign in to your Goldensweep account</p>
       </div>
 
       <div className="mb-6 mt-6 flex justify-center gap-3">
