@@ -17,6 +17,7 @@ import milkywayLogo from "./data/games/milky.jpg";
 import orionStarsLogo from "./data/games/orion.jpg";
 import vblinkLogo from "./data/games/vblink.jpg";
 import gameVaultLogo from "./data/games/gamevault.png";
+import bigWin from "./data/games/bigwin.jpg";
 
 /**
  * @typedef {Object} Game
@@ -84,12 +85,12 @@ export const hottestCasinoGames = [
     redirectLink: "/play/beach-fun",
   },
   {
-    id: "bee-workshop",
-    name: "Bee Workshop",
+    id: "big-win",
+    name: "Big Win",
     provider: "CP",
     gradient: "from-yellow-300 via-orange-500 to-slate-900",
-    logo: "/assets/games/bee-workshop.png",
-    redirectLink: "/play/bee-workshop",
+    logo: bigWin,
+    redirectLink: "https://www.gambl.com/games/apollo-games/sizzle-fire",
   },
   {
     id: "big-five",
