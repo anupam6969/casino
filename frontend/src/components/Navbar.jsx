@@ -147,7 +147,7 @@ export default function Navbar() {
               5,000
             </span>
             <Link to="/sign-in">
-              <GoldButton className="!min-h-11 !rounded-lg !bg-gradient-to-r !from-purple-600 !to-blue-500 !px-2.5 !py-2 !text-xs !font-semibold !text-white !shadow-none hover:!brightness-110 min-[375px]:!px-3 sm:!px-5 sm:!text-sm">
+              <GoldButton variant="outline" className="!min-h-11 !rounded-lg !border-purple-600 !bg-transparent !px-2.5 !py-2 !text-xs !font-semibold !text-white !shadow-none hover:!bg-purple-600/10 min-[375px]:!px-3 sm:!px-5 sm:!text-sm">
                 Login
               </GoldButton>
             </Link>
