@@ -25,11 +25,11 @@ export default function HeroBanner() {
             One Account. Multiple Gaming Worlds.
           </p>
           <p className="mt-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-sm font-semibold text-white/90 min-[375px]:text-base sm:text-xl">
-            <span>Buy Credits</span>
+            {/* <span>Buy Credits</span>
             <span className="text-gold-300">•</span>
             <span>Recharge</span>
             <span className="text-gold-300">•</span>
-            <span>Play</span>
+            <span>Play</span> */}
           </p>
           <Link
             to="/sign-up"
