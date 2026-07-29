@@ -3,9 +3,9 @@ import { CheckCircle2, Mail, MessageCircle, MapPin, Phone } from "lucide-react";
 import logoImg from "../data/images/logo.png";
 
 const socialLinks = [
-  { label: "Facebook", href: "https://www.facebook.com/share/1BSDn4Zd4V/", icon: FacebookIcon },
-  { label: "Instagram", href: "https://www.instagram.com/goldensweepcasino", icon: InstagramIcon },
-  { label: "Telegram", href: "https://t.me/goldensweep", icon: TelegramIcon },
+  { label: "Facebook", href: "https://www.facebook.com/share/1BSDn4Zd4V/", icon: FacebookIcon, colorClass: "text-[#1877F2]" },
+  { label: "Instagram", href: "https://www.instagram.com/goldensweepcasino", icon: InstagramIcon, colorClass: "" },
+  { label: "Telegram", href: "https://t.me/goldensweep", icon: TelegramIcon, colorClass: "text-[#26A5E4]" },
 ];
 
 const linkGroups = [
@@ -59,14 +59,14 @@ function FooterHeading({ children }) {
 function FooterLink({ link }) {
   if (link.to || link.href?.startsWith("/")) {
     return (
-      <Link to={link.to || link.href} className="inline-flex min-h-10 items-center justify-start text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+      <Link to={link.to || link.href} className="inline-flex min-h-10 items-center justify-start text-gray-400 transition hover:text-white focus:outline-none">
         {link.label}
       </Link>
     );
   }
 
   return (
-    <a href={link.href} className="inline-flex min-h-10 items-center justify-start text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+    <a href={link.href} className="inline-flex min-h-10 items-center justify-start text-gray-400 transition hover:text-white focus:outline-none">
       {link.label}
     </a>
   );
@@ -83,9 +83,18 @@ function FacebookIcon(props) {
 function InstagramIcon(props) {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
-      <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="17.4" cy="6.7" r="1.1" fill="currentColor" />
+      <defs>
+        <linearGradient id="instagram-icon-gradient" x1="4" y1="20" x2="20" y2="4" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#FEDA75" />
+          <stop offset="0.28" stopColor="#FA7E1E" />
+          <stop offset="0.52" stopColor="#D62976" />
+          <stop offset="0.76" stopColor="#962FBF" />
+          <stop offset="1" stopColor="#4F5BD5" />
+        </linearGradient>
+      </defs>
+      <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2" stroke="url(#instagram-icon-gradient)" strokeWidth="1.8" />
+      <circle cx="12" cy="12" r="4.2" stroke="url(#instagram-icon-gradient)" strokeWidth="1.8" />
+      <circle cx="17.4" cy="6.7" r="1.1" fill="url(#instagram-icon-gradient)" />
     </svg>
   );
 }
@@ -108,7 +117,7 @@ export default function Footer() {
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
-          <Link to="/" aria-label="GoldenSweep home" className="inline-flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+          <Link to="/" aria-label="GoldenSweep home" className="inline-flex items-center justify-center focus:outline-none">
             <img src={logoImg} alt="GoldenSweep Casino" className="h-24 w-auto max-w-[240px] object-contain sm:h-32 lg:h-36" loading="lazy" />
           </Link>
 
@@ -122,14 +131,14 @@ export default function Footer() {
           </p>
 
           <div className="mt-7 flex items-center justify-center gap-3">
-            {socialLinks.map(({ label, href, icon: Icon }) => (
+            {socialLinks.map(({ label, href, icon: Icon, colorClass }) => (
               <a
                 key={label}
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`GoldenSweep on ${label}`}
-                className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] text-white transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-yellow-500/70"
+                className={`grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.05] transition hover:bg-white/10 focus:outline-none ${colorClass}`}
               >
                 <Icon className="h-5 w-5" />
               </a>
@@ -162,12 +171,12 @@ export default function Footer() {
               {supportLinks.map(({ label, href, icon: Icon }) => (
                 <li key={label}>
                   {href.startsWith("/") ? (
-                    <Link to={href} className="inline-flex min-h-10 items-center justify-start gap-1.5 text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+                    <Link to={href} className="inline-flex min-h-10 items-center justify-start gap-1.5 text-gray-400 transition hover:text-white focus:outline-none">
                       <Icon className="h-4 w-4" />
                       {label}
                     </Link>
                   ) : (
-                    <a href={href} className="inline-flex min-h-10 items-center justify-start gap-1.5 break-all text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70">
+                    <a href={href} className="inline-flex min-h-10 items-center justify-start gap-1.5 break-all text-gray-400 transition hover:text-white focus:outline-none">
                       <Icon className="h-4 w-4" />
                       {label}
                     </a>
@@ -195,7 +204,7 @@ export default function Footer() {
               <li>
                 <a
                   href={`tel:${contactInfo.phone.replace(/[^+\d]/g, "")}`}
-                  className="inline-flex min-h-10 items-center justify-start gap-1.5 text-gray-400 transition hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70"
+                  className="inline-flex min-h-10 items-center justify-start gap-1.5 text-gray-400 transition hover:text-white focus:outline-none"
                 >
                   <Phone className="h-4 w-4" />
                   {contactInfo.phone}
