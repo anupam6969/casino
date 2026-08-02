@@ -49,7 +49,7 @@ export const hottestCasinoGames = [
     name: "Pirate Queen 2",
     provider: "JILI",
     gradient: "from-rose-500 via-orange-500 to-slate-900",
-    // logo: pirateQueenLogo,
+    logo: pirateQueenLogo,
     // redirectLink: "https://www.gambl.com/games/jili-games/pirate-queen-2",
   },
   {
@@ -57,7 +57,7 @@ export const hottestCasinoGames = [
     name: "Sin City",
     provider: "JILI",
     gradient: "from-fuchsia-500 via-purple-600 to-slate-900",
-    // logo: sinCityLogo,
+    logo: sinCityLogo,
     // redirectLink: "https://www.gambl.com/games/tada-gaming/sin-city",
   },
   {
@@ -65,7 +65,7 @@ export const hottestCasinoGames = [
     name: "Fortune Monkey",
     provider: "JILI",
     gradient: "from-yellow-400 via-amber-600 to-slate-900",
-    // logo: fortuneMonkeyLogo,
+    logo: fortuneMonkeyLogo,
     // redirectLink: "https://www.gambl.com/games/tada-gaming/fortune-monkey",
   },
   {
@@ -73,7 +73,7 @@ export const hottestCasinoGames = [
     name: "Boxing King",
     provider: "JILI",
     gradient: "from-red-500 via-stone-700 to-slate-900",
-    // logo: boxingKingLogo,
+    logo: boxingKingLogo,
     // redirectLink: "https://www.gambl.com/games/jili-games/boxing-king",
   },
   {
@@ -81,7 +81,7 @@ export const hottestCasinoGames = [
     name: "Beach Fun",
     provider: "CP",
     gradient: "from-cyan-300 via-blue-500 to-slate-900",
-    // logo: beachFunLogo,
+    logo: beachFunLogo,
     // redirectLink: "/play/beach-fun",
   },
   {
@@ -89,7 +89,7 @@ export const hottestCasinoGames = [
     name: "Big Win",
     provider: "CP",
     gradient: "from-yellow-300 via-orange-500 to-slate-900",
-    // logo: bigWin,
+    logo: bigWin,
     // redirectLink: "https://www.gambl.com/games/apollo-games/sizzle-fire",
   },
   {
@@ -97,7 +97,7 @@ export const hottestCasinoGames = [
     name: "Big Five",
     provider: "CP",
     gradient: "from-lime-400 via-emerald-700 to-slate-900",
-    // logo: bigFiveLogo,
+    logo: bigFiveLogo,
     // redirectLink: "https://slotcatalog.com/en/slots/The-Big-Five",
   },
   {
@@ -105,7 +105,7 @@ export const hottestCasinoGames = [
     name: "Blessing of Ice and Fire",
     provider: "CP",
     gradient: "from-sky-300 via-red-500 to-slate-900",
-    // logo: blessingOfIceAndFireLogo,
+    logo: blessingOfIceAndFireLogo,
     // redirectLink: "/play/blessing-of-ice-and-fire",
   },
   {
@@ -113,7 +113,7 @@ export const hottestCasinoGames = [
     name: "Adventure To The West",
     provider: "FASTSPIN",
     gradient: "from-violet-400 via-indigo-700 to-slate-900",
-    // logo: adventureToTheWestLogo,
+    logo: adventureToTheWestLogo,
     // redirectLink: "/play/adventure-to-the-west",
   },
   {
@@ -121,7 +121,7 @@ export const hottestCasinoGames = [
     name: "Alien Smash",
     provider: "FASTSPIN",
     gradient: "from-green-300 via-teal-700 to-slate-900",
-    // logo: alienSmashLogo,
+    logo: alienSmashLogo,
     // redirectLink: "/play/alien-smash",
   },
   {
@@ -129,7 +129,7 @@ export const hottestCasinoGames = [
     name: "Apollo Ray of Luck",
     provider: "FASTSPIN",
     gradient: "from-yellow-200 via-orange-500 to-slate-900",
-    // logo: apolloRayOfLuckLogo,
+    logo: apolloRayOfLuckLogo,
     // redirectLink: "/play/apollo-ray-of-luck",
   },
   {
@@ -137,7 +137,7 @@ export const hottestCasinoGames = [
     name: "Book of Giza",
     provider: "PIXMOVE",
     gradient: "from-amber-300 via-yellow-700 to-slate-900",
-    // logo: bookOfGizaLogo,
+    logo: bookOfGizaLogo,
     // redirectLink: "https://www.gambl.com/games/dwg/book-of-giza-gold",
   },
   {
@@ -145,7 +145,7 @@ export const hottestCasinoGames = [
     name: "Call Of The Jungle",
     provider: "PIXMOVE",
     gradient: "from-emerald-300 via-green-800 to-slate-900",
-    // logo: callOfTheJungleLogo,
+    logo: callOfTheJungleLogo,
     // redirectLink: "https://slotcatalog.com/en/slots/call-of-the-jungle",
   },
   {
@@ -153,7 +153,7 @@ export const hottestCasinoGames = [
     name: "Captain Dodger",
     provider: "PIXMOVE",
     gradient: "from-blue-300 via-indigo-700 to-slate-900",
-    // logo: captainDodgerLogo,
+    logo: captainDodgerLogo,
     // redirectLink: "https://slotcatalog.com/en/slots/captain-dodger",
   },
   {
@@ -161,7 +161,7 @@ export const hottestCasinoGames = [
     name: "Castle Smashers",
     provider: "PIXMOVE",
     gradient: "from-purple-300 via-pink-700 to-slate-900",
-    // logo: castleSmashersLogo,
+    logo: castleSmashersLogo,
     // redirectLink: "https://slotcatalog.com/en/slots/castle-smashers",
   },
 ];

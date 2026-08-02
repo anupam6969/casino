@@ -18,7 +18,7 @@ export default function LandingPage() {
         <NoPurchaseCTA />
         <GameProviders />
         <PlayerVoices />
-        <WhiteLabelLeasing />
+        {/* <WhiteLabelLeasing /> */}
       </div>
       <div className="relative z-10">
         <Footer />
