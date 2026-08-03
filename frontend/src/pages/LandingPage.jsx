@@ -17,7 +17,7 @@ export default function LandingPage() {
         <HottestCasinoGames />
         <NoPurchaseCTA />
         <GameProviders />
-        <PlayerVoices />
+        {/* <PlayerVoices /> */}
         {/* <WhiteLabelLeasing /> */}
       </div>
       <div className="relative z-10">
