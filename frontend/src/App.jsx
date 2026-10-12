@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { API_BASE } from "./api/apiClient.js";
 import AuthPage from "./pages/AuthPage.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import AboutUs from "./pages/Aboutus.jsx";
+import AboutUs from "./pages/About.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
 import PrivacyPolicy from "./pages/PrivacyNoticePage.jsx";
 import OfficialRules from "./pages/OfficialRules.jsx";
