@@ -4,8 +4,10 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const authRoutes = require("./routes/auth");
+const walletRoutes = require("./routes/wallet");
 const authMiddleware = require("./middleware/authMiddleware");
 const { me } = require("./controllers/authController");
+const walletController = require("./controllers/walletController");
 const configurePassport = require("./config/passport");
 
 const app = express();
@@ -17,6 +19,11 @@ const allowedOrigins = new Set([
 
 configurePassport(passport);
 
+app.post(
+  "/api/wallet/webhook",
+  express.raw({ type: "application/json" }),
+  walletController.handleSoapWebhook
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -37,6 +44,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/wallet", walletRoutes);
 app.get("/api/user/me", authMiddleware, me);
 
 // 404 handler

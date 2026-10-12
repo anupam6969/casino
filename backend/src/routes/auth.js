@@ -5,7 +5,9 @@ const authMiddleware = require("../middleware/authMiddleware");
 const { signinRateLimiter, signupRateLimiter } = require("../middleware/rateLimiter");
 
 const router = express.Router();
-const FRONTEND_URL = process.env.NODE_ENV === "production" ? "https://casino-dusky-two.vercel.app" : "http://localhost:5173";
+const FRONTEND_URL = process.env.FRONTEND_ORIGIN || (
+  process.env.NODE_ENV === "production" ? "https://casino-dusky-two.vercel.app" : "http://localhost:5173"
+);
 
 router.post("/signup", signupRateLimiter, signup);
 router.post("/signin", signinRateLimiter, signin);

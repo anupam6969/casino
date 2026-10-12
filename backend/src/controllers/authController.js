@@ -27,7 +27,7 @@ function toPublicUser(user) {
     username: user.username,
     email: user.email,
     profilePicture: user.profilePicture,
-    coinBalance: user.coinBalance ?? 5000,
+    coinBalance: user.coinBalance ?? 0,
     accountStatus: "Active",
   };
 }

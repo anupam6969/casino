@@ -15,24 +15,78 @@ function parseStoredUser(storedUser) {
   }
 }
 
+async function fetchFreshUser(authToken) {
+  const res = await fetch(`${API_BASE}/auth/me`, {
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
+    credentials: "include",
+  });
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw data;
+  }
+
+  return data.user;
+}
+
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  async function refreshUser(authToken = token) {
+    if (!authToken) {
+      return null;
+    }
+
+    const freshUser = await fetchFreshUser(authToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(freshUser));
+    setUser(freshUser);
+    return freshUser;
+  }
+
   useEffect(() => {
     const storedToken = localStorage.getItem(TOKEN_KEY);
     const storedUser = parseStoredUser(localStorage.getItem(USER_KEY));
+    let ignore = false;
 
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(storedUser);
+
+      async function refreshStoredUser() {
+        try {
+          const freshUser = await fetchFreshUser(storedToken);
+          if (!ignore) {
+            localStorage.setItem(USER_KEY, JSON.stringify(freshUser));
+            setUser(freshUser);
+          }
+        } catch {
+          if (!ignore) {
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(USER_KEY);
+            setToken(null);
+            setUser(null);
+          }
+        } finally {
+          if (!ignore) {
+            setLoading(false);
+          }
+        }
+      }
+
+      refreshStoredUser();
     } else {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
+      setLoading(false);
     }
 
-    setLoading(false);
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -105,6 +159,7 @@ export function AuthProvider({ children }) {
       logout,
       signup,
       signin,
+      refreshUser,
       isAuthenticated: Boolean(token && user),
       loading,
     }),

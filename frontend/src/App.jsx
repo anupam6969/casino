@@ -3,13 +3,16 @@ import { useEffect } from "react";
 import { API_BASE } from "./api/apiClient.js";
 import AuthPage from "./pages/AuthPage.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import FAQPage from "./pages/FAQPage.jsx";
+import AboutUs from "./pages/Aboutus.jsx";
 import LandingPage from "./pages/LandingPage.jsx";
-import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
-import RedemptionRules from "./pages/RedemptionRules.jsx";
+import PrivacyPolicy from "./pages/PrivacyNoticePage.jsx";
+import OfficialRules from "./pages/OfficialRules.jsx";
 import ResponsiblePlay from "./pages/ResponsiblePlay.jsx";
 import SweepstakesRules from "./pages/SweepstakesRules.jsx";
 import TermsConditions from "./pages/TermsConditions.jsx";
+import SSLPolicy from "./pages/SSLPolicy.jsx";
+import RefundPolicy from "./pages/RefundPolicy.jsx";
+import PromotionPolicy from "./pages/PromotionPolicy.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
 
@@ -163,10 +166,13 @@ export default function App() {
         </Route>
         <Route path="/terms-and-conditions" element={<TermsConditions />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/redemption-rules" element={<RedemptionRules />} />
-        <Route path="/responsible-play" element={<ResponsiblePlay />} />
+        <Route path="/official-rules" element={<OfficialRules />} />
+        <Route path="/responsible-gaming" element={<ResponsiblePlay />} />
         <Route path="/sweepstakes-rules" element={<SweepstakesRules />} />
-        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/ssl-policy" element={<SSLPolicy />} />
+        <Route path="/refund-cancellation-policy" element={<RefundPolicy />} />
+        <Route path="/promotion-policy" element={<PromotionPolicy />} />
       </Routes>
     </>
   );

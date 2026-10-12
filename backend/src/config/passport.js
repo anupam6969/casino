@@ -1,9 +1,11 @@
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const prisma = require("../lib/prisma");
 
-const callbackURL = process.env.NODE_ENV === "production"
-  ? "https://casino-1fpi.onrender.com/api/auth/google/callback"
-  : "http://localhost:5000/api/auth/google/callback";
+const callbackURL = process.env.GOOGLE_CALLBACK_URL || (
+  process.env.NODE_ENV === "production"
+    ? "https://casino-1fpi.onrender.com/api/auth/google/callback"
+    : "http://localhost:5000/api/auth/google/callback"
+);
 
 function buildUsername(email, googleId) {
   const localPart = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "_").slice(0, 20);
