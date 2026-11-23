@@ -28,7 +28,7 @@ function Divider({ children }) {
 
 function GoogleButton() {
   function handleGoogleAuth() {
-    window.location.assign(api.getUri({ url: "/auth/google" }));
+    window.location.assign(api.getUri({ url: "/auth/google", params: { origin: window.location.origin } }));
   }
 
   return (

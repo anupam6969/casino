@@ -1,7 +1,7 @@
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const prisma = require("../lib/prisma");
 
-const callbackURL = process.env.GOOGLE_CALLBACK_URL || (
+const callbackURL = process.env.GOOGLE_CALLBACK_URL?.trim() || (
   process.env.NODE_ENV === "production"
     ? "https://casino-1fpi.onrender.com/api/auth/google/callback"
     : "http://localhost:5000/api/auth/google/callback"
@@ -32,8 +32,8 @@ module.exports = function configurePassport(passport) {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        clientID: process.env.GOOGLE_CLIENT_ID?.trim(),
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET?.trim(),
         callbackURL,
       },
       async (accessToken, refreshToken, profile, done) => {
@@ -75,11 +75,7 @@ module.exports = function configurePassport(passport) {
 
           return done(null, user);
         } catch (err) {
-          console.error("Google OAuth verify error:", {
-            message: err.message,
-            code: err.code,
-            meta: err.meta,
-          });
+          console.error("Google OAuth account lookup failed", err.name, err.code);
           return done(err);
         }
       }

@@ -1,37 +1,48 @@
 const express = require("express");
+const { randomBytes } = require("node:crypto");
 const passport = require("passport");
 const { signup, signin, me, logout, signToken, setAuthCookie } = require("../controllers/authController");
 const authMiddleware = require("../middleware/authMiddleware");
 const { signinRateLimiter, signupRateLimiter } = require("../middleware/rateLimiter");
+const { defaultFrontendOrigin, allowedFrontendOrigins } = require("../config/frontendOrigins");
 
 const router = express.Router();
-const FRONTEND_URL = process.env.FRONTEND_ORIGIN || (
-  process.env.NODE_ENV === "production" ? "https://casino-dusky-two.vercel.app" : "http://localhost:5173"
-);
+const GOOGLE_STATE_COOKIE = "google_oauth_state";
+const googleStateCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+  path: "/api/auth/google/callback",
+};
 
 router.post("/signup", signupRateLimiter, signup);
 router.post("/signin", signinRateLimiter, signin);
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"], session: false }));
+router.get("/google", (req, res, next) => {
+  const origin = allowedFrontendOrigins.has(req.query.origin) ? req.query.origin : defaultFrontendOrigin;
+  const state = randomBytes(32).toString("hex");
+  res.cookie(GOOGLE_STATE_COOKIE, { state, origin }, { ...googleStateCookieOptions, maxAge: 10 * 60 * 1000 });
+  passport.authenticate("google", { scope: ["profile", "email"], session: false, state })(req, res, next);
+});
 router.get("/google/callback", (req, res, next) => {
-  passport.authenticate("google", { session: false }, (err, user, info) => {
-    if (err) {
-      console.error("Google OAuth callback error:", {
-        message: err.message,
-        code: err.code,
-        meta: err.meta,
-        stack: err.stack,
-      });
-      return res.redirect(`${FRONTEND_URL}/login?error=google_auth_failed`);
-    }
+  const attempt = req.cookies?.[GOOGLE_STATE_COOKIE];
+  res.clearCookie(GOOGLE_STATE_COOKIE, googleStateCookieOptions);
+  const validState = typeof req.query.state === "string" && req.query.state === attempt?.state;
+  const origin = validState && allowedFrontendOrigins.has(attempt.origin) ? attempt.origin : defaultFrontendOrigin;
+  const failureUrl = new URL("/login?error=google_auth_failed", origin).toString();
 
-    if (!user) {
-      console.warn("Google OAuth callback failed:", info);
-      return res.redirect(`${FRONTEND_URL}/login?error=google_auth_failed`);
+  if (!validState || typeof req.query.code !== "string" || !req.query.code || req.query.error) {
+    return res.redirect(failureUrl);
+  }
+
+  passport.authenticate("google", { session: false }, (err, user) => {
+    if (err || !user) {
+      if (err) console.error("Google OAuth callback failed", err.name);
+      return res.redirect(failureUrl);
     }
 
     const token = signToken(user.id);
     setAuthCookie(res, token);
-    return res.redirect(FRONTEND_URL);
+    return res.redirect(origin);
   })(req, res, next);
 });
 router.get("/me", authMiddleware, me);

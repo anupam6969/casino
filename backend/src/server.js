@@ -10,22 +10,16 @@ const authMiddleware = require("./middleware/authMiddleware");
 const { me } = require("./controllers/authController");
 const { syncGames } = require("./lib/syncGames");
 const configurePassport = require("./config/passport");
+const { allowedFrontendOrigins } = require("./config/frontendOrigins");
 
 const app = express();
 
 app.set("trust proxy", 1);
 
-const allowedOrigins = new Set([
-  "http://localhost:5173",
-  "https://casino-dusky-two.vercel.app",
-  "https://www.goldensweep.ai",
-  process.env.FRONTEND_ORIGIN,
-].filter(Boolean));
-
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.has(origin)) {
+      if (!origin || allowedFrontendOrigins.has(origin)) {
         return callback(null, true);
       }
       return callback(Object.assign(new Error("Not allowed by CORS"), { status: 403 }));
