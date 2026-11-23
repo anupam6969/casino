@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const prisma = require("../lib/prisma");
+const Decimal = require("../lib/decimal");
 const { validateSignup, validateSignin, sanitizeInput } = require("../utils/validators");
 
 const SALT_ROUNDS = 10;
@@ -27,7 +28,11 @@ function toPublicUser(user) {
     username: user.username,
     email: user.email,
     profilePicture: user.profilePicture,
-    coinBalance: user.coinBalance ?? 0,
+    // coinBalance: legacy integer cents for frontend compatibility
+    // Use stored coinBalance (integer cents) or derive from gcBalance
+    coinBalance: user.coinBalance ?? Math.floor(Number(user.gcBalance ?? "0") * 100),
+    gcBalance: user.gcBalance ?? "0.00000000",
+    scBalance: user.scBalance ?? "0.00000000",
     accountStatus: "Active",
   };
 }
@@ -67,7 +72,7 @@ async function signup(req, res) {
     const token = signToken(user.id);
     setAuthCookie(res, token);
 
-    return res.status(201).json({ token, user: toPublicUser(user) });
+    return res.status(201).json({ user: toPublicUser(user) });
   } catch (err) {
     console.error("Signup error:", err);
     return res.status(500).json({ error: "Something went wrong. Please try again." });
@@ -112,7 +117,7 @@ async function signin(req, res) {
     const token = signToken(user.id);
     setAuthCookie(res, token);
 
-    return res.status(200).json({ token, user: toPublicUser(user) });
+    return res.status(200).json({ user: toPublicUser(user) });
   } catch (err) {
     console.error("Signin error:", err);
     return res.status(500).json({ error: "Something went wrong. Please try again." });

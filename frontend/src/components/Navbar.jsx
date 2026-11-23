@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronDown, Coins, LayoutDashboard, LogOut } from "lucide-react";
+import { ChevronDown, Gamepad2, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext.jsx";
 import logoImg from "../data/images/logo.png";
 
 const navLinks = [
   { label: "Home", href: "/#top" },
-  { label: "Games", href: "/#games" },
-  { label: "How It Works", href: "/#how-it-works" },
+  { label: "Lobby", href: "/lobby" },
   { label: "About us", href: "/about-us" },
   { label: "Support", href: "/#support" },
 ];
@@ -52,7 +51,6 @@ function LoggedInMenu() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const username = user?.username || user?.name || "Player";
-  const coinBalance = Number.isFinite(Number(user?.coinBalance)) ? Number(user.coinBalance).toLocaleString() : "0";
 
   async function handleLogout() {
     await logout();
@@ -71,13 +69,7 @@ function LoggedInMenu() {
         <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-yellow-500 text-xs font-black text-black sm:h-9 sm:w-9">
           {getInitials(user)}
         </span>
-        <span className="hidden min-w-0 sm:block">
-          <span className="block max-w-28 truncate text-sm font-bold leading-5 lg:max-w-36">{username}</span>
-          <span className="flex items-center gap-1 text-xs font-semibold text-gold-200">
-            <Coins className="h-3.5 w-3.5" />
-            {coinBalance}
-          </span>
-        </span>
+        <span className="hidden min-w-0 max-w-28 truncate text-sm font-bold leading-5 sm:block lg:max-w-36">{username}</span>
         <ChevronDown className={`h-4 w-4 shrink-0 text-gray-300 transition ${open ? "rotate-180" : ""}`} />
       </button>
 
@@ -85,19 +77,7 @@ function LoggedInMenu() {
         <div className="absolute right-0 top-[calc(100%+0.75rem)] w-56 overflow-hidden rounded-xl border border-white/15 bg-slate-950 text-white shadow-2xl">
           <div className="border-b border-white/10 px-4 py-3 sm:hidden">
             <p className="truncate text-sm font-bold">{username}</p>
-            <p className="mt-1 flex items-center gap-1 text-xs font-semibold text-gold-200">
-              <Coins className="h-3.5 w-3.5" />
-              {coinBalance}
-            </p>
           </div>
-          <Link
-            to="/dashboard"
-            onClick={() => setOpen(false)}
-            className="flex min-h-11 w-full items-center gap-3 border-b border-white/10 px-4 text-left text-sm font-semibold text-gray-300 transition hover:bg-white/[0.06] hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500/70"
-          >
-            <LayoutDashboard className="h-4 w-4" />
-            Dashboard
-          </Link>
           <button
             type="button"
             onClick={handleLogout}
@@ -121,7 +101,7 @@ export default function Navbar() {
       <nav className="flex h-full w-full items-center justify-between gap-1 px-2 min-[375px]:gap-2 min-[375px]:px-3 sm:px-8">
         <LuxuryLogo />
         <div className="hidden items-center gap-8 lg:flex">
-          {navLinks.map((link) => (
+          {navLinks.filter((link) => !isAuthenticated || link.href !== "/lobby").map((link) => (
             <Link key={link.label} to={link.href} className="text-sm font-semibold uppercase tracking-wide text-gray-300 transition hover:text-white">
               {link.label}
             </Link>
@@ -131,11 +111,11 @@ export default function Navbar() {
         {isAuthenticated ? (
           <div className="flex min-w-0 items-center gap-1.5 min-[375px]:gap-2 lg:gap-3">
             <Link
-              to="/dashboard"
+              to="/lobby"
               className="hidden min-h-11 shrink-0 items-center gap-2 rounded-lg border border-yellow-500/50 px-4 text-sm font-bold text-gold-200 transition hover:bg-yellow-500 hover:text-black focus:outline-none focus:ring-2 focus:ring-yellow-500/70 sm:inline-flex"
             >
-              <LayoutDashboard className="h-4 w-4" />
-              Dashboard
+              <Gamepad2 className="h-4 w-4" />
+              Lobby
             </Link>
             <LoggedInMenu />
           </div>

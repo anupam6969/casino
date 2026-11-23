@@ -1,96 +1,63 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
-import { hottestCasinoGames } from "../games.js";
+﻿import { useEffect, useState } from "react";
+import { Gamepad2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { fetchGames } from "../api/gamesApi.js";
 
-function HotGameCard({ game }) {
-  const [logoFailed, setLogoFailed] = useState(false);
-  const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const isExternal = game.redirectLink?.startsWith("http");
-  const cardClass =
-    "group relative block cursor-pointer overflow-hidden rounded-lg border border-white/10 bg-slate-800 text-left transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 sm:rounded-xl";
-  const logoAvailable = Boolean(game.logo && !logoFailed);
+function LobbyGamePreview() {
+  const [games, setGames] = useState(null);
+  const [failed, setFailed] = useState(false);
 
-  function handlePlayClick(e) {
-    if (isAuthenticated) return;
+  useEffect(() => {
+    let active = true;
+    fetchGames({ currency: "GC", limit: 6 })
+      .then(({ data }) => {
+        if (active) setGames(data);
+      })
+      .catch(() => {
+        if (active) setFailed(true);
+      });
+    return () => { active = false; };
+  }, []);
 
-    e.preventDefault();
-    navigate("/sign-in", {
-      state: {
-        redirectTo: game.redirectLink,
-      },
-    });
-  }
-
-  const content = (
-    <>
-      <div className={`relative aspect-square w-full overflow-hidden bg-gradient-to-br ${game.gradient}`}>
-        {logoAvailable && (
-          <img
-            src={game.logo}
-            alt={`${game.name} logo`}
-            onError={() => setLogoFailed(true)}
-            className="absolute inset-0 h-full w-full object-cover"
-            loading="lazy"
-          />
-        )}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.34),transparent_22%),radial-gradient(circle_at_72%_68%,rgba(255,255,255,0.16),transparent_26%)]" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-        <span className="absolute left-1.5 top-1.5 rounded-md bg-black/70 px-1.5 py-0.5 text-[8px] font-bold uppercase text-white backdrop-blur-sm sm:left-2 sm:top-2 sm:px-2 sm:py-1 sm:text-[10px]">
-          {game.provider}
-        </span>
-      </div>
-      <div className="flex min-h-11 items-center p-2 sm:p-3">
-        <h3 className="text-[11px] font-semibold leading-snug text-white sm:text-sm">{game.name}</h3>
-      </div>
-    </>
-  );
-
-  if (isExternal) {
-    return (
-      <a href={game.redirectLink} target="_blank" rel="noopener noreferrer" className={cardClass} onClick={handlePlayClick}>
-        {content}
-      </a>
-    );
-  }
+  if (failed) return <p role="status" className="text-sm text-gray-400">Game preview is unavailable.</p>;
+  if (!games) return <p role="status" className="text-sm text-gray-400">Loading games…</p>;
+  if (!games.length) return <p className="text-sm text-gray-400">No games are available right now.</p>;
 
   return (
-    <Link to={game.redirectLink || "#"} className={cardClass} onClick={handlePlayClick}>
-      {content}
-    </Link>
+    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      {games.map((game) => {
+        const image = game.thumbnails?.square || game.thumbnails?.landscape || game.icon;
+        return (
+          <li key={game.slug} className="overflow-hidden rounded-xl border border-white/10 bg-slate-950">
+            <div className="grid aspect-square place-items-center bg-slate-800">
+              {image ? (
+                <img src={image} alt="" loading="lazy" className="h-full w-full object-cover" />
+              ) : (
+                <Gamepad2 aria-hidden="true" className="h-8 w-8 text-gray-400" />
+              )}
+            </div>
+            <p className="p-3 text-sm font-bold text-white">{game.name}</p>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
-export default function HottestCasinoGames() {
+export default function HottestCasinoGames({ showPreview = false }) {
   return (
     <section id="games" className="w-full px-3 py-8 sm:px-6 sm:py-10">
-      <div className="mx-auto max-w-6xl rounded-2xl border border-white/10 bg-slate-900/40 p-3 min-[375px]:p-4 sm:p-8 md:p-10">
-        {/* Mobile keeps the title and action on one row with no wrapping. */}
-        <div className="mb-4 flex items-center justify-between gap-2 text-center">
-          <h2 className="whitespace-nowrap text-base font-black min-[375px]:text-lg sm:text-xl md:text-2xl">
-            <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">Hottest</span>
-            <span className="text-white"> Casino Games</span>
-          </h2>
-          <button
-            type="button"
-            className="min-h-11 shrink-0 rounded-full border border-white/20 px-3 py-2 text-[10px] font-bold uppercase tracking-wide text-white transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-yellow-500/70 sm:px-5 sm:text-xs"
+      <div className="mx-auto max-w-6xl space-y-4 rounded-2xl border border-white/10 bg-slate-900/40 p-4 sm:p-8">
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-lg font-black text-white sm:text-2xl">{showPreview ? "Lobby Games" : "Casino Games"}</h2>
+          <Link
+            to="/lobby"
+            className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-white/20 px-4 text-xs font-bold uppercase text-white transition hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-yellow-500/70"
           >
-            See More
-          </button>
+            {showPreview ? "View Lobby" : "Browse Games"}
+          </Link>
         </div>
-
-        <div className="mb-8 flex justify-center">
-          <span className="inline-block w-fit rounded-full bg-gradient-to-r from-purple-600 to-blue-500 px-6 py-2 text-sm font-bold text-white">
-            500+ Games
-          </span>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 md:grid-cols-5">
-          {hottestCasinoGames.map((game) => (
-            <HotGameCard key={game.id} game={game} />
-          ))}
-        </div>
+        {showPreview && <LobbyGamePreview />}
       </div>
     </section>
   );

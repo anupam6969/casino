@@ -22,4 +22,12 @@ const signupRateLimiter = rateLimit({
   message: { error: "Too many signup attempts. Please try again later." },
 });
 
-module.exports = { signinRateLimiter, signupRateLimiter };
+const demoLaunchRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: numberFromEnv("DEMO_LAUNCH_RATE_LIMIT_MAX", 10),
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { code: "rateLimited", message: "Too many demo launches. Please try again shortly." },
+});
+
+module.exports = { signinRateLimiter, signupRateLimiter, demoLaunchRateLimiter };

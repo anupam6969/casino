@@ -1,0 +1,731 @@
+---
+name: sweeppark-games-integration
+description: Integrate a brand with the SweepPark games API and seamless wallet — sign games-api requests, list the catalogue, launch games, and implement the balance/bet/win/rollback wallet endpoints SweepPark calls. Use when writing, reviewing or debugging code that talks to SweepPark games-api or answers SweepPark wallet callbacks for operator gmv.
+---
+
+# SweepPark games integration
+
+> SweepPark gives a sweepstakes brand one API over every game provider. Your
+> backend calls **games-api** to list and launch games; SweepPark calls **your
+> wallet** to move GC and SC as players bet and win. SweepPark holds no money:
+> your wallet is the only source of truth for a balance.
+
+## This operator
+
+| | |
+|---|---|
+| Operator code | `gmv` |
+| games-api base URL | `https://api-nightly.sweeppark.com` |
+| Wallet base URL (registered) | `https://gameverse.ai` |
+| Wallet timeout | 1500 ms |
+| Currencies enabled | GC, SC |
+
+## Rules that are never optional
+
+- **Money is a decimal string at scale 8** (`"12.50000000"`), in requests, responses and your database. Never a float, never integer cents, never `parseFloat`.
+- **`playerRef` is a string** and is echoed back exactly as you launched with it. Never parse it as a number.
+- **Currency is `"GC"` or `"SC"`**, nothing else.
+- **`txRef` is your idempotency key.** A call can be sent again; the same `txRef` must get the same answer and move money at most once.
+- **Every wallet response is HTTP 200** with a JSON body and a result code, declines included. A non-2xx, a malformed body or a timeout is treated as a system error.
+- **`roundClosed` is advisory.** Never reject a call because you think the round is over.
+- **A `win` may arrive without a `bet`** (free spins), and a `rollback` may name a `txRef` you never saw — answer `nothingToRollback`.
+- **Reverse a rollback from your own record** of `reversesTxRef`: refund the stake you took, or take back the win you paid. Do not rely on `amount` alone.
+- **Reverse each movement once.** Two rollbacks with different `txRef`s can name the same `reversesTxRef` — the second refunds nothing. A call you declined moved nothing, so its rollback refunds nothing either.
+- **Store declines too.** A repeated `txRef` you declined gets the same decline, even if the balance would now cover it.
+- **A zero `win` is ordinary** — it is how most providers end a losing round — and a `win` may follow the rollback of its round's stake. Credit both.
+- **GC and SC are separate balances.** A call in one never moves the other.
+- **Secrets stay on your servers.** Never call games-api from a browser or an app.
+
+## Integration steps
+
+1. **Register your wallet callback URL.** The base URL we call your four wallet endpoints under. A change is reviewed by SweepPark before it takes effect. _(Operator panel: Integration → Wallet callback URL)_
+2. **Store your wallet signing secret.** SweepPark gave it to you when your account was created. Every call we make to your wallet is signed with it. Keep it server-side, and ask us if you need it rotated.
+3. **Implement the four wallet endpoints.** balance, bet, win and rollback. Verify our signature, dedupe on txRef, and always answer HTTP 200 with a result code.
+4. **Create an API key.** With the scopes your backend needs. The secret is shown once, so put it in your secret store straight away. _(Operator panel: Integration → API keys)_
+5. **Allowlist your server IPs.** Recommended. Once approved, calls from other addresses are flagged, and refused once enforcement is on. _(Operator panel: Integration → IP allowlist)_
+6. **Choose your lobby.** Switch studios and games on or off. /v1/games returns only what is on. _(Operator panel: Catalogue → Games and Studios)_
+7. **Sync the catalogue.** Page through /v1/games on a schedule and cache it for your lobby.
+8. **Launch games.** POST /v1/launch with the player, game and currency, then load gameUrl.
+9. **Test end to end.** Play a round in each currency, and use Activity to see every call we made and what you answered. _(Operator panel: Operations → Activity)_
+10. **Pass the integration tests.** We run the seamless contract against your wallet — duplicates, rollbacks of bets, wins and whole rounds, declines, currencies, signatures, timing — and tell you what to fix. A pass against your current wallet URL is the go-live signal. _(Operator panel: Settings → Integration tests)_
+
+## Calling games-api
+
+Every request carries these headers:
+
+| Header | Value |
+| --- | --- |
+| `X-Sweep-Park-Key` | Your API key id, e.g. btk_Qm3v… |
+| `X-Sweep-Park-Timestamp` | Unix time in seconds, within 5 minutes of ours |
+| `X-Sweep-Park-Nonce` | A fresh random value (a UUID) for every request, retries included |
+| `X-Sweep-Park-Signature` | Lowercase hex HMAC-SHA256 of the canonical string |
+
+The signature is lowercase hex HMAC-SHA256, keyed with the API key's secret, over:
+
+```
+{timestamp}.{nonce}.{METHOD} {path}?{sortedQuery}.{rawBody}
+```
+
+- `METHOD` uppercase; `path` without the query string (`/v1/games`).
+- `sortedQuery` is the query string re-encoded with its pairs sorted by key, then value. Empty when there is none — the `?` stays.
+- `rawBody` is the exact bytes you send; empty for a GET. Serialise once and sign that string.
+- The timestamp must be within 5 minutes of our clock, and a nonce can be used once.
+
+### Scopes
+
+| Scope | Grants |
+| --- | --- |
+| `catalogue:read` | List the games you can launch |
+| `launch:write` | Launch games, real and demo |
+| `history:read` | Read sessions, rounds and wallet calls |
+| `freeRounds:write` | Grant, read and cancel free rounds |
+
+### Node.js client
+
+```js
+import { createHmac, randomUUID } from "node:crypto";
+
+const BASE_URL = "https://api-nightly.sweeppark.com";
+const KEY_ID = process.env.SWEEPPARK_KEY_ID;
+const SECRET = process.env.SWEEPPARK_KEY_SECRET;
+
+// Sorted by key, then value, so we agree on it however your HTTP library
+// orders parameters.
+function sortedQuery(search) {
+  const pairs = [...new URLSearchParams(search)];
+  pairs.sort(([ak, av], [bk, bv]) =>
+    ak === bk ? (av < bv ? -1 : av > bv ? 1 : 0) : ak < bk ? -1 : 1,
+  );
+  return new URLSearchParams(pairs).toString();
+}
+
+export async function sweepPark(method, pathAndQuery, body) {
+  const url = new URL(pathAndQuery, BASE_URL);
+  // Sign the exact bytes you send. Serialise once and reuse the string.
+  const rawBody = body === undefined ? "" : JSON.stringify(body);
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  const nonce = randomUUID();
+
+  const canonical = `${timestamp}.${nonce}.${method} ${url.pathname}?${sortedQuery(url.search)}.${rawBody}`;
+  const signature = createHmac("sha256", SECRET).update(canonical).digest("hex");
+
+  const response = await fetch(url, {
+    method,
+    headers: {
+      "content-type": "application/json",
+      "x-sweep-park-key": KEY_ID,
+      "x-sweep-park-timestamp": timestamp,
+      "x-sweep-park-nonce": nonce,
+      "x-sweep-park-signature": signature,
+    },
+    body: rawBody || undefined,
+  });
+
+  const json = await response.json();
+  if (!response.ok) {
+    throw Object.assign(new Error(json.message), { status: response.status, code: json.code });
+  }
+  return json;
+}
+
+// const { data } = await sweepPark("POST", "/v1/launch", {
+//   playerRef: "user-48213", game: "gates-of-olympus", currency: "SC", ipAddress: req.ip,
+// });
+// res.redirect(data.gameUrl);
+```
+
+### Python client
+
+```python
+import hashlib, hmac, json, os, time, uuid
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit
+
+import requests
+
+BASE_URL = "https://api-nightly.sweeppark.com"
+KEY_ID = os.environ["SWEEPPARK_KEY_ID"]
+SECRET = os.environ["SWEEPPARK_KEY_SECRET"].encode()
+
+
+def sorted_query(query: str) -> str:
+    # Matches JavaScript's URLSearchParams encoding: spaces as "+", "*" left as is.
+    pairs = sorted(parse_qsl(query, keep_blank_values=True))
+    return urlencode(pairs, safe="*", quote_via=lambda s, safe, *_: quote(s, safe=safe).replace("%20", "+").replace("~", "%7E"))
+
+
+def sweep_park(method: str, path_and_query: str, body=None):
+    parts = urlsplit(path_and_query)
+    raw_body = "" if body is None else json.dumps(body, separators=(",", ":"))
+    timestamp = str(int(time.time()))
+    nonce = str(uuid.uuid4())
+
+    canonical = f"{timestamp}.{nonce}.{method} {parts.path}?{sorted_query(parts.query)}.{raw_body}"
+    signature = hmac.new(SECRET, canonical.encode(), hashlib.sha256).hexdigest()
+
+    response = requests.request(
+        method,
+        BASE_URL + path_and_query,
+        data=raw_body.encode() or None,
+        headers={
+            "content-type": "application/json",
+            "x-sweep-park-key": KEY_ID,
+            "x-sweep-park-timestamp": timestamp,
+            "x-sweep-park-nonce": nonce,
+            "x-sweep-park-signature": signature,
+        },
+        timeout=10,
+    )
+    payload = response.json()
+    if not response.ok:
+        raise RuntimeError(f"{response.status_code} {payload['code']}: {payload['message']}")
+    return payload
+```
+
+### Responses
+
+Success: `{ "message": "OK", "data": … }`, plus `pagination` on lists.
+Lists page by cursor: pass `pagination.nextCursor` back as `cursor` until `hasMore` is false.
+Errors: `{ "code": "auth.staleTimestamp", "message": "…", "errors"?: { "field": "…" } }`. Branch on `code`; `message` may be reworded.
+
+Rate limits per API key: 600 reads/minute, 60 launches/minute. A `429` carries a `RateLimit` header saying when the window resets.
+
+## Endpoints
+
+### GET /v1/games
+
+List games. Scope: `catalogue:read`. Every game you can launch right now, newest first: live globally, from a studio you have on, and enabled in your lobby. Cache it and refresh it every few minutes rather than calling it per page view. `maintenance` is set while the game or its provider has maintenance booked or under way; the game stays launchable, and whether to hide it is your call.
+
+Query:
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `limit` | integer | no | 1–100, default 25 |
+| `cursor` | string | no | `pagination.nextCursor` from the previous page |
+| `q` | string | no | Matches game name and studio |
+
+Response:
+
+```json
+{
+  "message": "OK",
+  "data": [
+    {
+      "id": "01a0ccc2-096b-7092-9811-3752fd1bbd90",
+      "slug": "gates-of-olympus",
+      "name": "Gates of Olympus",
+      "studio": { "slug": "pragmatic", "name": "Pragmatic Play" },
+      "categories": ["slots"],
+      "icon": "https://…/icon.png",
+      "thumbnails": { "square": "https://…" },
+      "rtp": "96.50",
+      "volatility": 5,
+      "tags": ["popular"],
+      "maintenance": null
+    }
+  ],
+  "pagination": {
+    "limit": 25,
+    "hasMore": true,
+    "hasPrevious": false,
+    "nextCursor": "AaDM2rbPcaGln9OE_33U-g",
+    "prevCursor": null
+  }
+}
+```
+
+### GET /v1/games/{slug}
+
+Get a game. Scope: `catalogue:read`. One game by slug. `404 game.notFound` means it is not launchable for you right now.
+
+Response:
+
+```json
+{ "message": "OK", "data": { "slug": "gates-of-olympus", "name": "Gates of Olympus", "…": "…" } }
+```
+
+### POST /v1/launch
+
+Launch a game. Scope: `launch:write`. Opens a real-money session and returns the URL to load the game from, in an iframe or a new window. The game's wallet calls then reach your wallet with this `sessionId` as `sessionRef`. A player has one open session at a time: launching again closes the previous one. A round left unfinished there stays with the provider: launching that game again resumes it, and its wins and refunds still reach your wallet.
+
+Body:
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `playerRef` | string | yes | Your player id, 1–128 chars. We never parse it |
+| `game` | string | yes | A slug from /v1/games |
+| `currency` | "GC" \| "SC" | yes | Must be enabled on your account |
+| `ipAddress` | string | yes | The player's IP as you saw it. Providers geo-check it |
+| `mobile` | boolean | no | Default false |
+| `language` | string | no | e.g. en, en-US |
+| `country` | string | no | ISO-3166 country or subdivision: US, US-IN |
+| `returnUrl` | url | no | Where the game's exit button goes |
+| `depositUrl` | url | no | Where the game's deposit button goes |
+
+Request:
+
+```json
+{
+  "playerRef": "user-48213",
+  "game": "gates-of-olympus",
+  "currency": "SC",
+  "ipAddress": "203.0.113.24",
+  "mobile": false,
+  "language": "en",
+  "country": "US-NJ",
+  "returnUrl": "https://yourbrand.example/lobby"
+}
+```
+
+Response:
+
+```json
+{
+  "message": "OK",
+  "data": {
+    "sessionId": "01a0cd28-1af2-761e-89c5-cbca4bbd57f2",
+    "gameUrl": "https://provider.example/launch?token=…",
+    "game": "gates-of-olympus",
+    "currency": "SC",
+    "correlationId": "5b0f6f5e-3c8e-4a57-9d8c-2f0d1c1b7a44"
+  }
+}
+```
+
+### POST /v1/launch/demo
+
+Launch a demo. Scope: `launch:write`. Play-for-fun with no player, no currency and no wallet calls. Needs the demo feature on your account.
+
+Body:
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `game` | string | yes | A slug from /v1/games |
+| `ipAddress` | string | yes | The visitor's IP |
+| `mobile` | boolean | no | Default false |
+| `language` | string | no | e.g. en |
+| `returnUrl` | url | no | Where the exit button goes |
+
+Response:
+
+```json
+{ "message": "OK", "data": { "gameUrl": "https://…", "game": "gates-of-olympus", "correlationId": "…" } }
+```
+
+### GET /v1/sessions/{id}
+
+Get a session. Scope: `history:read`. A session you launched, by the `sessionId` launch returned.
+
+Response:
+
+```json
+{
+  "message": "OK",
+  "data": {
+    "id": "01a0cd28-…",
+    "playerRef": "user-48213",
+    "game": "gates-of-olympus",
+    "mode": "real",
+    "currency": "SC",
+    "createdAt": "2026-09-23T07:25:52.754Z",
+    "closedAt": null
+  }
+}
+```
+
+### GET /v1/rounds
+
+List rounds. Scope: `history:read`. Rounds newest first, optionally for one player. Amounts are decimal strings.
+
+Query:
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `limit` | integer | no | 1–100, default 25 |
+| `cursor` | string | no | `pagination.nextCursor` from the previous page |
+| `playerRef` | string | no | Only this player's rounds |
+
+Response:
+
+```json
+{
+  "message": "OK",
+  "data": [
+    {
+      "id": "01a0cd28-…",
+      "roundRef": "r2-1790148352731",
+      "sessionId": "01a0cd28-…",
+      "playerRef": "user-48213",
+      "game": "gates-of-olympus",
+      "currency": "SC",
+      "totalBet": "0.50000000",
+      "totalWin": "0.00000000",
+      "isFinished": true,
+      "createdAt": "2026-09-23T07:25:52.754Z"
+    }
+  ],
+  "pagination": { "limit": 25, "hasMore": false, "nextCursor": null, "…": "…" }
+}
+```
+
+### GET /v1/transactions
+
+List a round's wallet calls. Scope: `history:read`. Every wallet call we made to you for one round, oldest first, with what your wallet answered. Use it to reconcile against your own ledger.
+
+Query:
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `roundRef` | string | yes | The roundRef your wallet was sent |
+
+Response:
+
+```json
+{
+  "message": "OK",
+  "data": [
+    {
+      "txRef": "01a0cd28-1b0c-7a61-…",
+      "action": "settle",
+      "bet": "0.50000000",
+      "win": "0.00000000",
+      "currency": "SC",
+      "balanceAfter": "99.50000000",
+      "status": "ok",
+      "resultCode": "ok",
+      "operatorTxRef": "your-ledger-id-991",
+      "createdAt": "2026-09-23T07:25:52.800Z"
+    }
+  ]
+}
+```
+
+### GET /v1/free-rounds/bets
+
+List free-round stakes. Scope: `freeRounds:write`. The stakes a game's free rounds may be granted at, in one currency. Grant at one of these: the provider refuses any other.
+
+Query:
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `game` | string | yes | A slug from /v1/games tagged `free-rounds` |
+| `currency` | "GC" \| "SC" | yes | The grant's currency |
+
+Response:
+
+```json
+{
+  "message": "OK",
+  "data": {
+    "game": "egypt-gods",
+    "currency": "SC",
+    "bets": ["0.10000000", "0.20000000", "0.50000000", "1.00000000"]
+  }
+}
+```
+
+### POST /v1/free-rounds
+
+Grant free rounds. Scope: `freeRounds:write`. Grants a player rounds the provider pays for, on one game in one currency. The player finds them the next time they launch that game in that currency. Each round's bet reaches your wallet with `amount` 0, and what it wins as an ordinary win; both carry `meta.freeRoundGrantId`, this grant's `id`. Idempotent on `grantRef`: a retry answers with the same grant and never grants twice, and after `503 freeRounds.providerFailed` a retry with the same `grantRef` is safe. Needs the free-rounds feature on your account.
+
+Body:
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `grantRef` | string | yes | Your idempotency key, 1–64 chars. One per grant |
+| `playerRef` | string | yes | Your player id |
+| `game` | string | yes | A slug from /v1/games tagged `free-rounds` |
+| `currency` | "GC" \| "SC" | yes | Enabled on your account |
+| `rounds` | integer | yes | 1–1000 |
+| `betAmount` | decimal string | yes | Stake per round, one of /v1/free-rounds/bets |
+| `expiresAt` | ISO-8601 | no | Unplayed rounds lapse then. Omit for the provider's default |
+
+Request:
+
+```json
+{
+  "grantRef": "welcome-user-48213",
+  "playerRef": "user-48213",
+  "game": "egypt-gods",
+  "currency": "SC",
+  "rounds": 10,
+  "betAmount": "0.5",
+  "expiresAt": "2026-12-31T23:59:59Z"
+}
+```
+
+Response:
+
+```json
+{
+  "message": "OK",
+  "data": {
+    "id": "01a0cd28-5c1e-7a3b-9e2f-4d6a8b0c1e3f",
+    "grantRef": "welcome-user-48213",
+    "playerRef": "user-48213",
+    "game": "egypt-gods",
+    "currency": "SC",
+    "rounds": 10,
+    "betAmount": "0.50000000",
+    "expiresAt": "2026-12-31T23:59:59.000Z",
+    "status": "active",
+    "createdAt": "2026-10-13T09:00:00.000Z",
+    "cancelledAt": null
+  }
+}
+```
+
+### GET /v1/free-rounds
+
+List free-round grants. Scope: `freeRounds:write`. Grants newest first, optionally for one player. `status` is `active` once the provider confirmed it, `failed` when it did not (retry the grant), `cancelled` once removed. Whether the rounds have been played is the provider's to know; the wallet calls tell you.
+
+Query:
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `limit` | integer | no | 1–100, default 25 |
+| `cursor` | string | no | `pagination.nextCursor` from the previous page |
+| `playerRef` | string | no | Only this player's grants |
+
+Response:
+
+```json
+{ "message": "OK", "data": [{ "id": "01a0cd28-…", "status": "active", "…": "…" }], "pagination": { "…": "…" } }
+```
+
+### GET /v1/free-rounds/{id}
+
+Get a free-round grant. Scope: `freeRounds:write`. One grant, by the `id` the grant returned.
+
+Response:
+
+```json
+{
+  "message": "OK",
+  "data": {
+    "id": "01a0cd28-5c1e-7a3b-9e2f-4d6a8b0c1e3f",
+    "grantRef": "welcome-user-48213",
+    "playerRef": "user-48213",
+    "game": "egypt-gods",
+    "currency": "SC",
+    "rounds": 10,
+    "betAmount": "0.50000000",
+    "expiresAt": "2026-12-31T23:59:59.000Z",
+    "status": "active",
+    "createdAt": "2026-10-13T09:00:00.000Z",
+    "cancelledAt": null
+  }
+}
+```
+
+### POST /v1/free-rounds/{id}/cancel
+
+Cancel free rounds. Scope: `freeRounds:write`. Removes a grant's unplayed rounds at the provider. Cancelling twice answers the first. The provider refuses (`503 freeRounds.cancelRefused`) once the rounds have been played or have lapsed. Works after the feature or the provider is switched off, so a grant can always be withdrawn.
+
+Response:
+
+```json
+{ "message": "OK", "data": { "id": "01a0cd28-…", "status": "cancelled", "cancelledAt": "2026-10-14T10:00:00.000Z", "…": "…" } }
+```
+
+### GET /v1/health-check
+
+Health check. No authentication. Unauthenticated. Use it to test connectivity, not to monitor your integration.
+
+Response:
+
+```json
+{
+  "message": "OK",
+  "data": { "status": "ok", "service": "games-api", "at": "2026-09-23T10:00:00.000Z" }
+}
+```
+
+## Errors
+
+| Status | Code | Meaning | What to do |
+| --- | --- | --- | --- |
+| 400 | `error.malformedJson` | The body is not valid JSON | Send the exact bytes you signed, as JSON |
+| 400 | `launch.currencyNotEnabled` | That currency is not on your account | Ask us to enable it, or launch the other one |
+| 400 | `freeRounds.gameUnsupported` | The game does not take free rounds | Grant on a game tagged `free-rounds` |
+| 400 | `freeRounds.betAmountInvalid` | The stake is not a positive decimal string | Use a stake from /v1/free-rounds/bets |
+| 400 | `freeRounds.expiryInPast` | expiresAt is not in the future | Send a later expiry, or none |
+| 401 | `auth.missingKey` | No X-Sweep-Park-Key header | Sign every request |
+| 401 | `auth.invalidSignature` | Unknown key, revoked key or wrong signature | Check the canonical string, key id and secret |
+| 401 | `auth.staleTimestamp` | Timestamp more than 5 minutes from our clock | Sync with NTP; sign right before sending |
+| 401 | `auth.nonceReused` | That nonce was already used | A new nonce per request, retries included |
+| 403 | `auth.insufficientScope` | The key lacks this endpoint's scope | Create a key with the scope |
+| 403 | `auth.ipNotAllowed` | Source IP is not on your allowlist | Add it under Integration → IP allowlist |
+| 403 | `feature.disabled` | Games, demo or free rounds is not enabled for you | Contact SweepPark |
+| 404 | `game.notFound` | Not launchable for you right now | Refresh your catalogue cache |
+| 404 | `session.notFound` | No such session on your account | Use the sessionId launch returned |
+| 404 | `freeRounds.notFound` | No such grant on your account | Use the id the grant returned |
+| 409 | `freeRounds.grantRefReused` | That grantRef named a different grant | A fresh grantRef per grant |
+| 409 | `freeRounds.notActive` | The provider never confirmed this grant | Nothing to cancel; retry the grant if you still want it |
+| 409 | `session.launchInProgress` | Two launches raced for one player | Retry once, after a moment |
+| 422 | `error.validationFailed` | Invalid fields; see `errors` | Fix the named fields |
+| 429 | `rateLimit.exceeded` | Too many requests for this key | Back off; the RateLimit header says when the window resets |
+| 503 | `launch.providerFailed` | The provider refused the launch | Retry; send us the correlationId if it persists |
+| 503 | `freeRounds.providerFailed` | The provider did not confirm the grant | Retry with the same grantRef; it never grants twice |
+| 503 | `freeRounds.cancelRefused` | The provider would not remove the rounds | They were played or lapsed; check the wallet calls |
+| 503 | `provider.unavailable` | The game's provider is down or off | Hide the game and retry later |
+
+## Your seamless wallet
+
+SweepPark calls `POST {walletBaseUrl}/casino-games/{operation}` with a JSON body:
+
+| Endpoint | Purpose | Money |
+| --- | --- | --- |
+| `/casino-games/balance` | The player's current balance in one currency | None |
+| `/casino-games/bet` | Debit a stake | Debit `amount` |
+| `/casino-games/win` | Credit winnings. May arrive without a bet (free spins) | Credit `amount` |
+| `/casino-games/rollback` | Reverse an earlier bet or win (`reversesTxRef`) | Undo the original |
+
+### Verifying our signature
+
+| Header | Value |
+| --- | --- |
+| `X-Sweep-Park-Timestamp` | Unix time in seconds when we signed |
+| `X-Sweep-Park-Nonce` | Unique per call. Reject one you have seen in the last 5 minutes |
+| `X-Sweep-Park-Operator` | Your operator code |
+| `X-Sweep-Park-Correlation-Id` | Threads this call through our logs and yours. Log it |
+| `X-Sweep-Park-Signature` | hex(HMAC-SHA256(signingSecret, timestamp.nonce.rawBody)) |
+
+Recompute `hex(HMAC-SHA256(signingSecret, "{timestamp}.{nonce}.{rawBody}"))` over the raw body, compare in constant time, reject a timestamp more than 5 minutes off and a nonce you have already seen. During a secret rotation we sign with the new secret: accept either until you have switched.
+
+```js
+import { createHmac, timingSafeEqual } from "node:crypto";
+import express from "express";
+
+const SIGNING_SECRETS = [process.env.SWEEPPARK_SIGNING_SECRET, process.env.SWEEPPARK_SIGNING_SECRET_PREVIOUS]
+  .filter(Boolean);
+
+const app = express();
+// Keep the raw bytes: the signature is over the body exactly as we sent it,
+// and re-serialising parsed JSON changes it.
+app.use("/sweeppark", express.raw({ type: "application/json" }));
+
+function verified(req) {
+  const timestamp = req.get("x-sweep-park-timestamp");
+  const nonce = req.get("x-sweep-park-nonce");
+  const signature = req.get("x-sweep-park-signature") ?? "";
+  if (!timestamp || !nonce) return false;
+  const age = Math.abs(Date.now() / 1000 - Number(timestamp));
+  if (!Number.isFinite(age) || age > 300) return false;
+
+  const payload = `${timestamp}.${nonce}.${req.body.toString("utf8")}`;
+  const matches = SIGNING_SECRETS.some((secret) => {
+    const expected = Buffer.from(createHmac("sha256", secret).update(payload).digest("hex"));
+    const given = Buffer.from(signature);
+    return expected.length === given.length && timingSafeEqual(expected, given);
+  });
+  // nonces.claim: your store's set-if-absent with a 5-minute expiry, e.g.
+  // Redis SET key 1 NX EX 300. A nonce seen before is a replay.
+  return matches && nonces.claim(nonce);
+}
+```
+
+### Request body
+
+| Field | Type | On | Meaning |
+| --- | --- | --- | --- |
+| `v` | 1 | all | Contract version |
+| `txRef` | string | all | Our id for this call. Your idempotency key |
+| `operatorId` | string | all | Your operator code |
+| `playerRef` | string | all | Your player id, exactly as you launched with it |
+| `currency` | "GC" \| "SC" | all | Which of the player's wallets |
+| `provider` | string | all | Provider slug, e.g. velitech |
+| `gameRef` | string | all | Our game id |
+| `sessionRef` | string | all | The sessionId launch returned |
+| `occurredAt` | ISO-8601 | all | When we received the provider's call |
+| `correlationId` | uuid | all | Same as the header. Log it |
+| `meta` | object | all | Provider passthrough: free-spin ids, bonus refs |
+| `roundRef` | string | bet, win, rollback | The provider's round id |
+| `amount` | decimal string | bet, win, rollback | Scale 8, e.g. "12.50000000" |
+| `roundClosed` | boolean | bet, win, rollback | Advisory only. Never reject because of it |
+| `reversesTxRef` | string | rollback | The txRef being reversed. Absent for a standalone cancel |
+
+### Response body
+
+```json
+{ "code": "ok", "balance": "99.50000000", "currency": "SC", "operatorTxRef": "your-ledger-id" }
+```
+
+`balance` is required on every answer, after the move. `operatorTxRef` is optional; send your ledger id and reconciliation joins on it.
+
+### Result codes
+
+| Code | When | Balance to return |
+| --- | --- | --- |
+| `ok` | Applied | After the move |
+| `duplicateIgnored` | This txRef was already applied | The same as the first answer |
+| `insufficientFunds` | The stake exceeds the balance | Current |
+| `playerNotFound` | Unknown playerRef | "0" |
+| `playerBlocked` | Self-excluded, frozen or closed | Current |
+| `currencyNotSupported` | The player has no wallet in that currency | "0" |
+| `limitExceeded` | A betting or responsible-gaming limit | Current |
+| `nothingToRollback` | You have no record of reversesTxRef | Current |
+| `systemError` | Anything else | Current, if you know it |
+
+### Example bet handler
+
+```js
+app.post("/sweeppark/bet", async (req, res) => {
+  if (!verified(req)) return res.status(401).end();
+  const call = JSON.parse(req.body.toString("utf8"));
+
+  const answer = await db.transaction(async (tx) => {
+    // Idempotency first: the same txRef can reach you more than once, and it
+    // must get the same answer every time — a decline included.
+    const seen = await tx.walletCalls.find({ txRef: call.txRef });
+    if (seen) return seen.response;
+
+    const response = await applyBet(tx, call);
+    await tx.walletCalls.insert({ txRef: call.txRef, response });
+    return response;
+  });
+
+  // Always HTTP 200 with a code. A non-2xx or a malformed body is treated as a
+  // system error, and the provider is told the bet failed.
+  res.status(200).json(answer);
+});
+
+async function applyBet(tx, call) {
+  const wallet = await tx.wallets.lockFor(call.playerRef, call.currency);
+  if (!wallet) return { code: "playerNotFound", balance: "0", currency: call.currency };
+  if (wallet.blocked) return { code: "playerBlocked", balance: wallet.balance, currency: call.currency };
+
+  // Decimal arithmetic only. Never parseFloat an amount.
+  if (new Decimal(wallet.balance).lt(call.amount)) {
+    return { code: "insufficientFunds", balance: wallet.balance, currency: call.currency };
+  }
+  const entry = await tx.ledger.debit(wallet, call.amount, { txRef: call.txRef, roundRef: call.roundRef });
+  return { code: "ok", balance: entry.balanceAfter, currency: call.currency, operatorTxRef: entry.id };
+}
+```
+
+### Timing
+
+Answer within 1500 ms, at p99 with headroom. When you do not answer in time, we do not know whether you applied the call, so the provider is told it failed. The provider may follow with a `rollback` naming that `txRef`: reverse it if you applied it, answer `nothingToRollback` if you did not. Anything still open is reconciled against your ledger, so keep `txRef` on every ledger entry. Keep the handler to one database transaction, with no outbound calls in it.
+
+## Go-live checklist
+
+- [ ] Every wallet response is HTTP 200 with a JSON body matching the contract, including declines
+- [ ] Amounts and balances are decimal strings, never floats, in your code and your database
+- [ ] A repeated txRef returns the same result and balance and never moves money twice
+- [ ] A win without a bet, and a rollback with nothing to roll back, are both handled
+- [ ] A rollback reverses the movement reversesTxRef names exactly as you recorded it, once, however many rollbacks name it — and never a call you declined
+- [ ] A repeated txRef you declined gets the same decline, even once the balance would cover it
+- [ ] A zero win, and a win after its round's stake was rolled back, are both credited
+- [ ] GC and SC are separate balances, and amounts keep all eight decimal places
+- [ ] roundClosed never causes a rejection
+- [ ] Your wallet answers within the timeout at p99, with headroom
+- [ ] Our signature is verified on the raw body, and seen nonces are rejected
+- [ ] Your server clock is NTP-synced
+- [ ] API secrets live only on your servers, never in a browser or app
+- [ ] You log correlationId on every wallet call
+
+## Debugging
+
+- Every launch returns a `correlationId`, and every wallet call carries one. Quote it to SweepPark support.
+- The operator panel's **Operations → Activity** shows each wallet call, what you answered and how long it took, plus calls that never reached you (bad signature, unknown player).
+- `auth.invalidSignature` is almost always the canonical string: a re-serialised body, an unsorted query, or a path that includes the query.

@@ -14,7 +14,7 @@ export default function LandingPage() {
       <Navbar />
       <div className="relative z-10">
         <HeroBanner />
-        <HottestCasinoGames />
+        <HottestCasinoGames showPreview />
         <NoPurchaseCTA />
         <GameProviders />
         {/* <PlayerVoices /> */}

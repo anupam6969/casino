@@ -31,9 +31,7 @@ router.get("/google/callback", (req, res, next) => {
 
     const token = signToken(user.id);
     setAuthCookie(res, token);
-    const redirectUrl = new URL(FRONTEND_URL);
-    redirectUrl.searchParams.set("token", token);
-    return res.redirect(redirectUrl.toString());
+    return res.redirect(FRONTEND_URL);
   })(req, res, next);
 });
 router.get("/me", authMiddleware, me);

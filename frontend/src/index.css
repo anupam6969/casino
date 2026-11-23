@@ -13,9 +13,34 @@
   body {
     margin: 0;
     min-width: 320px;
-    overflow-x: hidden;
+    /* Clip horizontal overflow without creating a second vertical scroller. */
+    overflow-x: clip;
     background: #0d0d0d;
     font-family: "Poppins", system-ui, sans-serif;
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #d4af37 #171717;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: #171717;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #d4af37;
+    background-clip: padding-box;
+    border: 1px solid #171717;
+    border-radius: 9999px;
   }
 
   h1,

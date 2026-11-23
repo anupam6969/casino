@@ -1,4 +1,4 @@
-// Prisma schema for the PostgreSQL database configured in prisma.config.ts.
+// Prisma schema for the PostgreSQL database.
 
 generator client {
   provider = "prisma-client-js"
@@ -18,10 +18,18 @@ model User {
   googleId       String?       @unique
   profilePicture String?
   soapCustomerId String?       @unique
+
+  // Balances in decimal string at scale 8
+  gcBalance      String        @default("0.00000000")
+  scBalance      String        @default("0.00000000")
+
+  // Legacy balance - to be migrated and eventually removed
   coinBalance    Int           @default(0)
+
   createdAt      DateTime      @default(now())
   lastLoginAt    DateTime?
   transactions   Transaction[]
+  walletCalls    WalletCall[]
 }
 
 model Transaction {
@@ -35,4 +43,46 @@ model Transaction {
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
   user                    User     @relation(fields: [userId], references: [id])
+}
+
+model WalletCall {
+  txRef           String   @id
+  playerRef       String
+  currency        String
+  action          String
+  amount          String?
+  reversesTxRef   String?
+  status          String
+  resultCode      String
+  balanceAfter    String
+  operatorTxRef   String?
+  meta            Json?
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [playerRef], references: [id])
+}
+
+model Nonce {
+  nonce     String   @id
+  bodyHash  String
+  createdAt DateTime @default(now())
+}
+
+model Game {
+  id          String   @id
+  slug        String   @unique
+  name        String
+  studioSlug  String
+  studioName  String
+  categories  String[]
+  icon        String?
+  thumbnails  Json?
+  rtp         String?
+  volatility  Int?
+  tags        String[]
+  maintenance Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([studioSlug])
 }

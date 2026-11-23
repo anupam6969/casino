@@ -16,9 +16,9 @@ export default function GameLaunch() {
   return (
     <main className="min-h-screen bg-background px-4 py-10 text-cream sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl">
-        <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm font-semibold text-gold-200 transition hover:text-white">
+        <Link to="/lobby" className="inline-flex items-center gap-2 text-sm font-semibold text-gold-200 transition hover:text-white">
           <ArrowLeft size={17} />
-          Back to Dashboard
+          Back to Lobby
         </Link>
 
         <motion.section

@@ -16,7 +16,7 @@ const faqGroups = [
       },
       {
         question: "Which platforms are currently available?",
-        answer: "Available platforms may vary by account, provider availability, and operational status. Check your dashboard for the current list of supported game platforms.",
+        answer: "Available platforms may vary by account, provider availability, and operational status. Check the Lobby for available games.",
       },
       {
         question: "Are my personal details secure?",
@@ -84,7 +84,7 @@ const faqGroups = [
       },
       {
         question: "Where do I find my game username and password?",
-        answer: "Game login details, when available, are shown in your account dashboard or provided through official GoldenSweep support channels.",
+        answer: "Contact official GoldenSweep support for help with game login details.",
       },
     ],
   },
