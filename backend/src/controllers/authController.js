@@ -12,12 +12,21 @@ function signToken(userId) {
   });
 }
 
+function authCookieOptions() {
+  const isProd = process.env.NODE_ENV === "production";
+
+  return {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
+    path: "/",
+  };
+}
+
 function setAuthCookie(res, token) {
   res.cookie("token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    ...authCookieOptions(),
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 }
 
@@ -138,7 +147,7 @@ async function me(req, res) {
 }
 
 async function logout(req, res) {
-  res.clearCookie("token");
+  res.clearCookie("token", authCookieOptions());
   return res.status(200).json({ message: "Logged out." });
 }
 

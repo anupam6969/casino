@@ -1,13 +1,10 @@
 ﻿import { createContext, useContext, useEffect, useState } from "react";
-import { apiFetch } from "../api/apiClient.js";
+import { api } from "../api/apiClient.js";
 
 const AuthContext = createContext(null);
 
 async function fetchCurrentUser() {
-  const response = await apiFetch("/auth/me");
-  if (response.status === 401) return null;
-  const data = await response.json();
-  if (!response.ok) throw data;
+  const { data } = await api.get("/auth/me");
   return data.user;
 }
 
@@ -44,15 +41,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function submitCredentials(path, credentials) {
-    const response = await apiFetch(path, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(credentials),
-    });
-    const data = await response.json();
-    if (!response.ok) throw data;
-    setUser(data.user);
-    return data;
+    try {
+      const { data } = await api.post(path, credentials);
+      setUser(data.user);
+      return data;
+    } catch (error) {
+      throw error.response?.data ?? error;
+    }
   }
 
   function signup(credentials) {
@@ -66,7 +61,7 @@ export function AuthProvider({ children }) {
   async function logout() {
     setUser(null);
     try {
-      await apiFetch("/auth/logout", { method: "POST" });
+      await api.post("/auth/logout");
     } catch {
       // The local session is cleared even if the server is unavailable.
     }

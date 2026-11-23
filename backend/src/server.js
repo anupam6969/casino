@@ -13,39 +13,33 @@ const configurePassport = require("./config/passport");
 
 const app = express();
 
-// Only accept forwarded client IPs from explicitly trusted reverse proxies.
-const trustedProxies = process.env.TRUSTED_PROXIES?.split(",").map((proxy) => proxy.trim()).filter(Boolean);
-if (trustedProxies?.length) app.set("trust proxy", trustedProxies);
+app.set("trust proxy", 1);
 
 const allowedOrigins = new Set([
   "http://localhost:5173",
   "https://casino-dusky-two.vercel.app",
+  "https://www.goldensweep.ai",
   process.env.FRONTEND_ORIGIN,
 ].filter(Boolean));
 
-configurePassport(passport);
-
-// SweepPark seamless wallet endpoints - mounted at root, must come before general json parser
-// to capture the raw body for signature verification.
-app.use(
-  "/casino-games",
-  express.raw({ type: "application/json" }),
-  casinoGamesRoutes
-);
-
-app.use(express.json());
-app.use(cookieParser());
 app.use(
   cors({
     origin(origin, callback) {
       if (!origin || allowedOrigins.has(origin)) {
         return callback(null, true);
       }
-      return callback(new Error("Not allowed by CORS"));
+      return callback(Object.assign(new Error("Not allowed by CORS"), { status: 403 }));
     },
     credentials: true,
   })
 );
+
+configurePassport(passport);
+
+// SweepPark signature verification requires the raw body before JSON parsing.
+app.use("/casino-games", express.raw({ type: "application/json" }), casinoGamesRoutes);
+app.use(express.json());
+app.use(cookieParser());
 app.use(passport.initialize());
 
 app.get("/api/health", (req, res) => {
@@ -63,6 +57,7 @@ app.use((req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
+  if (err.status === 403) return res.status(403).json({ error: "Forbidden." });
   console.error(err);
   res.status(500).json({ error: "Internal server error." });
 });

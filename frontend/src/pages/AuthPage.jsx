@@ -1,11 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle, Check, ChevronDown, Eye, EyeOff, ShieldCheck } from "lucide-react";
-import { API_BASE } from "../api/apiClient.js";
+import { api } from "../api/apiClient.js";
 import Navbar from "../components/Navbar.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
-
-const BACKEND_URL = API_BASE.replace(/\/api\/?$/, "");
 
 function GoogleIcon() {
   return (
@@ -30,7 +28,7 @@ function Divider({ children }) {
 
 function GoogleButton() {
   function handleGoogleAuth() {
-    window.location.href = `${BACKEND_URL}/api/auth/google`;
+    window.location.assign(api.getUri({ url: "/auth/google" }));
   }
 
   return (
